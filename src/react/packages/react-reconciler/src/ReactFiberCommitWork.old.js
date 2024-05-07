@@ -2011,11 +2011,11 @@ function commitResetTextContent(current: Fiber) {
 }
 
 export function commitMutationEffects(
-  root: FiberRoot,
+  root: FiberRoot, // fiberRoot
   renderPriorityLevel: LanePriority,
   firstChild: Fiber,
 ) {
-  // 设置第一个子元素
+  // 设置第一个子元素, firstChild = hostRootFiber
   nextEffect = firstChild;
   // 开启循环 
   commitMutationEffects_begin(root, renderPriorityLevel);
@@ -2067,6 +2067,7 @@ function commitMutationEffects_begin(
     const child = fiber.child;
     
     if ((fiber.subtreeFlags & MutationMask) !== NoFlags && child !== null) {
+      // child.return = fiber;
       ensureCorrectReturnPointer(child, fiber);
       nextEffect = child;
     } else {

@@ -29,50 +29,43 @@ class ClassComponent extends Component {
 }
 
 function FunctionComponent({ name }) {
-  const [count, setCount] = useState(0)
-  return (
-    <div className="function border">
-      {name}
-      {count}
-      <button onClick={() => setCount(count + 1)}>click</button>
-    </div>
-  )
+  return <div className="function border">{name}</div>
 }
+// const App = () => {
+//   const [show, setShow] = useState(true)
+//   useEffect(() => {
+//     return () => {
+//       debugger
+//     }
+//   })
+//   return (
+//     <div className="box border">
+//       <p style={{ border: '1px solid blue' }}>
+//         <span>
+//           方<span>hh</span>
+//         </span>
+//         <button
+//           onClick={() => {
+//             setShow(false)
+//           }}
+//         >
+//           哈哈
+//         </button>
+//       </p>
+//       <ClassComponent name="class-hh"></ClassComponent>
+//       {show && <FunctionComponent name="function-hh"></FunctionComponent>}
+//     </div>
+//   )
+// }
 const App = () => {
-  const [show, setShow] = useState(true)
-  useEffect(() => {
-    return () => {
-      debugger
-    }
-  })
   return (
     <div className="box border">
-      <p style={{ border: '1px solid blue' }}>
-        <span>
-          方<span>hh</span>
-        </span>
-        <button
-          onClick={() => {
-            setShow(false)
-          }}
-        >
-          哈哈
-        </button>
-      </p>
-      <ClassComponent name="class-hh"></ClassComponent>
-      {show && <FunctionComponent name="function-hh"></FunctionComponent>}
+      <p>text</p>
+      <FunctionComponent name="哇哈哈"></FunctionComponent>
+      <ClassComponent name="哇哈哈"></ClassComponent>
     </div>
   )
 }
-const jsx = (
-  <div className="box border">
-    <p>
-      <span>方</span>
-      <span>哈哈</span>
-    </p>
-    <FunctionComponent name="哇哈哈"></FunctionComponent>
-    <ClassComponent name="哇哈哈"></ClassComponent>
-  </div>
-)
+
 console.log('react 版本===', React.version)
 export default App

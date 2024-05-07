@@ -879,6 +879,7 @@ function completeWork(
           markRef(workInProgress);
         }
       } else {
+        console.info('completeWork==', workInProgress)
         // 初始化时
         if (!newProps) {
           invariant(
@@ -920,7 +921,7 @@ function completeWork(
             currentHostContext,
             workInProgress,
           );
-          // 创建当前dom对象下的所有子节点 
+          // 将后代dom节点插入刚创建的dom里
           appendAllChildren(instance, workInProgress, false, false);
           // dom节点赋值给stateNode属性
           workInProgress.stateNode = instance;
