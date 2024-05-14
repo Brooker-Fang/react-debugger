@@ -594,6 +594,7 @@ function propagateParentContextChanges(
   // then we could remove both `DidPropagateContext` and `NeedsPropagation`.
   // Consider this as part of the next refactor to the fiber tree structure.
   workInProgress.flags |= DidPropagateContext;
+  workInProgress.flagsStr = addFlags(workInProgress.flagsStr, 'DidPropagateContext');
 }
 
 export function checkIfContextChanged(currentDependencies: Dependencies) {
@@ -712,6 +713,7 @@ export function readContext<T>(
       };
       if (enableLazyContextPropagation) {
         currentlyRenderingFiber.flags |= NeedsPropagation;
+        workInProgress.flagsStr = addFlags(workInProgress.flagsStr, 'NeedsPropagation');
       }
     } else {
       // Append a new context item.

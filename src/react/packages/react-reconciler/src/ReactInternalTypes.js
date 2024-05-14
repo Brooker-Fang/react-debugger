@@ -137,7 +137,9 @@ export type Fiber = {|
 
   // Effect
   flags: Flags,
+  flagsStr: string;
   subtreeFlags: Flags,
+  subtreeFlagsStr: string;
   deletions: Array<Fiber> | null,
 
   // Singly linked list fast path to the next fiber with side-effects.

@@ -236,6 +236,7 @@ import {onCommitRoot as onCommitRootTestSelector} from './ReactTestSelectors';
 
 // Used by `act`
 import enqueueTask from 'shared/enqueueTask';
+import addFlags, { andFlags } from '../../shared/flagsStrAction';
 
 const ceil = Math.ceil;
 
@@ -1878,6 +1879,7 @@ function completeUnitOfWork(unitOfWork: Fiber): void {
         // Since we're restarting, remove anything that is not a host effect
         // from the effect tag.
         next.flags &= HostEffectMask;
+        next.flagsStr = andFlags(next.flagsStr, 'HostEffectMask');
         workInProgress = next;
         return;
       }
@@ -1902,6 +1904,7 @@ function completeUnitOfWork(unitOfWork: Fiber): void {
       if (returnFiber !== null) {
         // Mark the parent fiber as incomplete and clear its subtree flags.
         returnFiber.flags |= Incomplete;
+        returnFiber.flagsStr = addFlags(returnFiber.flagsStr, 'Incomplete');
         returnFiber.subtreeFlags = NoFlags;
         returnFiber.deletions = null;
       }

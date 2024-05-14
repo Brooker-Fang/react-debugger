@@ -109,6 +109,7 @@ import {
   entangleTransitions,
 } from './ReactUpdateQueue.old';
 import {pushInterleavedQueue} from './ReactFiberInterleavedUpdates.old';
+import addFlags, {addFlagsToString} from '../../shared/flagsStrAction';
 
 const {ReactCurrentDispatcher, ReactCurrentBatchConfig} = ReactSharedInternals;
 
@@ -1412,6 +1413,7 @@ function mountEffectImpl(fiberFlags, hookFlags, create, deps): void {
   const hook = mountWorkInProgressHook();
   const nextDeps = deps === undefined ? null : deps;
   currentlyRenderingFiber.flags |= fiberFlags;
+  currentlyRenderingFiber.flagsStr = addFlagsToString(currentlyRenderingFiber.flagsStr, fiberFlags);
   //useEffect hook 的 memoizedState = effects环状链表
   hook.memoizedState = pushEffect(
     HookHasEffect | hookFlags,
@@ -1440,7 +1442,7 @@ function updateEffectImpl(fiberFlags, hookFlags, create, deps): void {
   }
 
   currentlyRenderingFiber.flags |= fiberFlags;
-
+  currentlyRenderingFiber.flagsStr = addFlagsToString(currentlyRenderingFiber.flagsStr, fiberFlags);
   hook.memoizedState = pushEffect(
     HookHasEffect | hookFlags,
     create,
@@ -1834,8 +1836,10 @@ function mountOpaqueIdentifier(): OpaqueIDType | void {
         (currentlyRenderingFiber.mode & StrictEffectsMode) === NoMode
       ) {
         currentlyRenderingFiber.flags |= MountPassiveDevEffect | PassiveEffect;
+        currentlyRenderingFiber.flagsStr = addFlags(currentlyRenderingFiber.flagsStr, 'MountPassiveDevEffect', 'PassiveEffect');
       } else {
         currentlyRenderingFiber.flags |= PassiveEffect;
+        currentlyRenderingFiber.flagsStr = addFlags(currentlyRenderingFiber.flagsStr, 'PassiveEffect');
       }
       pushEffect(
         HookHasEffect | HookPassive,

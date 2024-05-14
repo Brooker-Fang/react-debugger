@@ -153,15 +153,18 @@ import {
   popRootCachePool,
   popCachePool,
 } from './ReactFiberCacheComponent.old';
+import addFlags from '../../shared/flagsStrAction';
 
 function markUpdate(workInProgress: Fiber) {
   // Tag the fiber with an update effect. This turns a Placement into
   // a PlacementAndUpdate.
   workInProgress.flags |= Update;
+  workInProgress.flagsStr = addFlags(workInProgress.flagsStr, 'Update');
 }
 
 function markRef(workInProgress: Fiber) {
   workInProgress.flags |= Ref;
+  workInProgress.flagsStr = addFlags(workInProgress.flagsStr, 'Ref');
 }
 
 function hadNoMutationsEffects(current: null | Fiber, completedWork: Fiber) {
@@ -854,6 +857,7 @@ function completeWork(
           // if the previous render was null (so the the container would already be empty).
           // mount时 会打上Snapshot的标记
           workInProgress.flags |= Snapshot;
+          workInProgress.flagsStr = addFlags(workInProgress.flagsStr, 'Snapshot');
         }
       }
       updateHostContainer(current, workInProgress);
@@ -1039,6 +1043,7 @@ function completeWork(
             // If something suspended, schedule an effect to attach retry listeners.
             // So we might as well always mark this.
             workInProgress.flags |= Update;
+            workInProgress.flagsStr = addFlags(workInProgress.flagsStr, 'Update');
             bubbleProperties(workInProgress);
             if (enableProfilerTimer) {
               if ((workInProgress.mode & ProfileMode) !== NoMode) {
@@ -1125,6 +1130,7 @@ function completeWork(
           // retry listener to the promise. This flag is also used to hide the
           // primary children.
           workInProgress.flags |= Update;
+          workInProgress.flagsStr = addFlags(workInProgress.flagsStr, 'Update');
         }
       }
       if (supportsMutation) {
@@ -1136,6 +1142,7 @@ function completeWork(
           // *unhide* children that were previously hidden, so check if this
           // is currently timed out, too.
           workInProgress.flags |= Update;
+          workInProgress.flagsStr = addFlags(workInProgress.flagsStr, 'Update');
         }
       }
       if (
@@ -1145,6 +1152,7 @@ function completeWork(
       ) {
         // Always notify the callback
         workInProgress.flags |= Update;
+        workInProgress.flagsStr = addFlags(workInProgress.flagsStr, 'Update');
       }
       bubbleProperties(workInProgress);
       if (enableProfilerTimer) {
@@ -1225,6 +1233,7 @@ function completeWork(
               if (suspended !== null) {
                 didSuspendAlready = true;
                 workInProgress.flags |= DidCapture;
+                workInProgress.flagsStr = addFlags(workInProgress.flagsStr, 'DidCapture');
                 cutOffTailIfNeeded(renderState, false);
 
                 // If this is a newly suspended tree, it might not get committed as
@@ -1243,6 +1252,7 @@ function completeWork(
                 if (newThennables !== null) {
                   workInProgress.updateQueue = newThennables;
                   workInProgress.flags |= Update;
+                  workInProgress.flagsStr = addFlags(workInProgress.flagsStr, 'Update');
                 }
 
                 // Rerender the whole list, but this time, we'll force fallbacks
@@ -1273,6 +1283,7 @@ function completeWork(
             // left in the tail. We'll just give up further attempts to render
             // the main content and only render fallbacks.
             workInProgress.flags |= DidCapture;
+            workInProgress.flagsStr = addFlags(workInProgress.flagsStr, 'DidCapture');
             didSuspendAlready = true;
 
             cutOffTailIfNeeded(renderState, false);
@@ -1300,6 +1311,7 @@ function completeWork(
           const suspended = findFirstSuspended(renderedTail);
           if (suspended !== null) {
             workInProgress.flags |= DidCapture;
+            workInProgress.flagsStr = addFlags(workInProgress.flagsStr, 'DidCapture');
             didSuspendAlready = true;
 
             // Ensure we transfer the update queue to the parent so that it doesn't
@@ -1308,6 +1320,7 @@ function completeWork(
             if (newThennables !== null) {
               workInProgress.updateQueue = newThennables;
               workInProgress.flags |= Update;
+              workInProgress.flagsStr = addFlags(workInProgress.flagsStr, 'Update');
             }
 
             cutOffTailIfNeeded(renderState, true);
@@ -1334,6 +1347,7 @@ function completeWork(
             // attempts to render the main content and only render fallbacks.
             // The assumption is that this is usually faster.
             workInProgress.flags |= DidCapture;
+            workInProgress.flagsStr = addFlags(workInProgress.flagsStr, 'DidCapture');
             didSuspendAlready = true;
 
             cutOffTailIfNeeded(renderState, false);
@@ -1437,6 +1451,7 @@ function completeWork(
           newProps.mode !== 'unstable-defer-without-hiding'
         ) {
           workInProgress.flags |= Update;
+          workInProgress.flagsStr = addFlags(workInProgress.flagsStr, 'Update');
         }
       }
 

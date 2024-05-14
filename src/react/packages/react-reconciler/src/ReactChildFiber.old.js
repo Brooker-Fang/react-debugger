@@ -47,6 +47,7 @@ import {
 import {emptyRefsObject} from './ReactFiberClassComponent.old';
 import {isCompatibleFamilyForHotReloading} from './ReactFiberHotReloading.old';
 import {StrictLegacyMode} from './ReactTypeOfMode';
+import addFlags from '../../shared/flagsStrAction';
 
 let didWarnAboutMaps;
 let didWarnAboutGenerators;
@@ -273,6 +274,7 @@ function ChildReconciler(shouldTrackSideEffects) {
     if (deletions === null) {
       returnFiber.deletions = [childToDelete];
       returnFiber.flags |= ChildDeletion;
+      returnFiber.flagsStr = addFlags(returnFiber.flagsStr, 'ChildDeletion')
     } else {
       deletions.push(childToDelete);
     }
@@ -343,6 +345,7 @@ function ChildReconciler(shouldTrackSideEffects) {
       if (oldIndex < lastPlacedIndex) {
         // This is a move.
         newFiber.flags |= Placement;
+        newFiber.flagsStr = addFlags(newFiber.flagsStr, 'Placement')
         return lastPlacedIndex;
       } else {
         // This item can stay in place.
@@ -351,6 +354,7 @@ function ChildReconciler(shouldTrackSideEffects) {
     } else {
       // This is an insertion.
       newFiber.flags |= Placement;
+      newFiber.flagsStr = addFlags(newFiber.flagsStr, 'Placement')
       return lastPlacedIndex;
     }
   }
@@ -360,6 +364,7 @@ function ChildReconciler(shouldTrackSideEffects) {
     // placement for inserting new children.
     if (shouldTrackSideEffects && newFiber.alternate === null) {
       newFiber.flags |= Placement;
+      newFiber.flagsStr = addFlags(newFiber.flagsStr, 'Placement')
     }
     return newFiber;
   }

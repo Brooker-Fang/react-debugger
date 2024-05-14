@@ -87,6 +87,7 @@ import {
   REACT_LEGACY_HIDDEN_TYPE,
   REACT_CACHE_TYPE,
 } from 'shared/ReactSymbols';
+import { andFlags } from '../../shared/flagsStrAction';
 
 export type {Fiber};
 
@@ -139,6 +140,7 @@ function FiberNode(
 
   // Effects
   this.flags = NoFlags; // 副作用标记
+  this.flagsStr = '';
   this.subtreeFlags = NoFlags; // 包含更深层次的子节点的副作用
   this.deletions = null; // 存储将要被删除的子节点
 
@@ -280,7 +282,7 @@ export function createWorkInProgress(current: Fiber, pendingProps: any): Fiber {
     // We already have an alternate.
     // Reset the effect tag.
     workInProgress.flags = NoFlags;
-
+    workInProgress.flagsStr = ''
     // The effects are no longer valid.
     workInProgress.subtreeFlags = NoFlags;
     workInProgress.deletions = null;
@@ -298,6 +300,7 @@ export function createWorkInProgress(current: Fiber, pendingProps: any): Fiber {
   // Reset all effects except static ones.
   // Static effects are not specific to a render.
   workInProgress.flags = current.flags & StaticMask;
+  workInProgress.flagsStr = andFlags(current.flagsStr, 'StaticMask')
   workInProgress.childLanes = current.childLanes;
   workInProgress.lanes = current.lanes;
 
@@ -362,7 +365,7 @@ export function resetWorkInProgress(workInProgress: Fiber, renderLanes: Lanes) {
   // Reset the effect flags but keep any Placement tags, since that's something
   // that child fiber is setting, not the reconciliation.
   workInProgress.flags &= StaticMask | Placement;
-
+  workInProgress.flagsStr = andFlags(workInProgress.flagsStr, 'StaticMask', 'Placement')
   // The effects are no longer valid.
 
   const current = workInProgress.alternate;
