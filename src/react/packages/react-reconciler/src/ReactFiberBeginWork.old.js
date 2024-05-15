@@ -224,8 +224,7 @@ import {
 import {MAX_SIGNED_31_BIT_INT} from './MaxInts';
 
 import {disableLogs, reenableLogs} from 'shared/ConsolePatchingDev';
-import addFlags from '../../shared/flagsStrAction';
-
+import addFlags, { addSubtreeFlags } from '../../shared/flagsStrAction';
 const ReactCurrentOwner = ReactSharedInternals.ReactCurrentOwner;
 
 let didReceiveUpdate: boolean = false;
@@ -1256,7 +1255,6 @@ function updateHostRoot(current, workInProgress, renderLanes) {
       // inserted into the React tree here. It just happens to not need DOM
       // mutations because it already exists.
       node.flags = (node.flags & ~Placement) | Hydrating;
-      console.info('node.flags==', node.flags)
       node = node.sibling;
     }
   } else {
@@ -2336,6 +2334,7 @@ function updateSuspenseFallbackChildren(
     // the current tree; see previous branch.)
     primaryChildFragment.subtreeFlags =
       currentPrimaryChildFragment.subtreeFlags & StaticMask;
+      primaryChildFragment.subtreeFlagsStr = addSubtreeFlags(currentPrimaryChildFragment.subtreeFlagsStr, 'StaticMask');
   }
   let fallbackChildFragment;
   if (currentFallbackChildFragment !== null) {

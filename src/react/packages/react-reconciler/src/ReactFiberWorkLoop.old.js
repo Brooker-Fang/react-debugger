@@ -1172,7 +1172,8 @@ function performSyncWorkOnRoot(root) {
   root.finishedWork = finishedWork;
   root.finishedLanes = lanes;
   // 进入commit 阶段
-  console.log('进入commit 阶段, finishedWork===', finishedWork)
+  console.red('进入commit 阶段 ======')
+  console.log('finishedWork===', finishedWork)
   console.log('fiberRoot===', root)
   commitRoot(root);
 
@@ -1906,6 +1907,7 @@ function completeUnitOfWork(unitOfWork: Fiber): void {
         returnFiber.flags |= Incomplete;
         returnFiber.flagsStr = addFlags(returnFiber.flagsStr, 'Incomplete');
         returnFiber.subtreeFlags = NoFlags;
+        returnFiber.subtreeFlagsStr = ''
         returnFiber.deletions = null;
       }
     }

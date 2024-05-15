@@ -142,6 +142,7 @@ function FiberNode(
   this.flags = NoFlags; // 副作用标记
   this.flagsStr = '';
   this.subtreeFlags = NoFlags; // 包含更深层次的子节点的副作用
+  this.subtreeFlagsStr = '';
   this.deletions = null; // 存储将要被删除的子节点
 
   this.lanes = NoLanes;
@@ -285,6 +286,7 @@ export function createWorkInProgress(current: Fiber, pendingProps: any): Fiber {
     workInProgress.flagsStr = ''
     // The effects are no longer valid.
     workInProgress.subtreeFlags = NoFlags;
+    workInProgress.subtreeFlagsStr = '';
     workInProgress.deletions = null;
 
     if (enableProfilerTimer) {
@@ -376,6 +378,7 @@ export function resetWorkInProgress(workInProgress: Fiber, renderLanes: Lanes) {
 
     workInProgress.child = null;
     workInProgress.subtreeFlags = NoFlags;
+    workInProgress.subtreeFlagsStr = '';
     workInProgress.memoizedProps = null;
     workInProgress.memoizedState = null;
     workInProgress.updateQueue = null;
@@ -397,6 +400,7 @@ export function resetWorkInProgress(workInProgress: Fiber, renderLanes: Lanes) {
 
     workInProgress.child = current.child;
     workInProgress.subtreeFlags = NoFlags;
+    workInProgress.subtreeFlagsStr = '';
     workInProgress.deletions = null;
     workInProgress.memoizedProps = current.memoizedProps;
     workInProgress.memoizedState = current.memoizedState;
@@ -831,6 +835,7 @@ export function assignFiberPropertiesInDEV(
   target.mode = source.mode;
   target.flags = source.flags;
   target.subtreeFlags = source.subtreeFlags;
+  target.subtreeFlagsStr = source.subtreeFlagsStr;
   target.deletions = source.deletions;
   target.lanes = source.lanes;
   target.childLanes = source.childLanes;

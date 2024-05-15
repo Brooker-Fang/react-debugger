@@ -2,7 +2,11 @@ import * as React from "react";
 import * as ReactDOM from "react-dom";
 import "./index.css";
 import App from "./pages/ExamplePage";
-
+console.red = (...args) => {
+  args.forEach(arg=> {
+    console.info(`%c${arg}`, 'color: red;')
+  })
+}
 ReactDOM.render(<App key={"app"}></App>, document.getElementById("root"), () => {
   console.log('rootFiber callback')
 });

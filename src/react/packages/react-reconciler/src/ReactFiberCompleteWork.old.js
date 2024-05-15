@@ -153,18 +153,18 @@ import {
   popRootCachePool,
   popCachePool,
 } from './ReactFiberCacheComponent.old';
-import addFlags from '../../shared/flagsStrAction';
+import { addSubtreeFlags } from '../../shared/flagsStrAction';
 
 function markUpdate(workInProgress: Fiber) {
   // Tag the fiber with an update effect. This turns a Placement into
   // a PlacementAndUpdate.
   workInProgress.flags |= Update;
-  workInProgress.flagsStr = addFlags(workInProgress.flagsStr, 'Update');
+  workInProgress.flagsStr = addSubtreeFlags(workInProgress.flagsStr, 'Update');
 }
 
 function markRef(workInProgress: Fiber) {
   workInProgress.flags |= Ref;
-  workInProgress.flagsStr = addFlags(workInProgress.flagsStr, 'Ref');
+  workInProgress.flagsStr = addSubtreeFlags(workInProgress.flagsStr, 'Ref');
 }
 
 function hadNoMutationsEffects(current: null | Fiber, completedWork: Fiber) {
@@ -683,6 +683,7 @@ function bubbleProperties(completedWork: Fiber) {
   
   let newChildLanes = NoLanes;
   let subtreeFlags = NoFlags;
+  let subtreeFlagsStr = ''
   // 首次渲染
   if (!didBailout) {
     // Bubble up the earliest expiration time.
@@ -700,8 +701,9 @@ function bubbleProperties(completedWork: Fiber) {
         );
 
         subtreeFlags |= child.subtreeFlags;
+        subtreeFlagsStr = addSubtreeFlags(subtreeFlagsStr,child.subtreeFlagsStr)
         subtreeFlags |= child.flags;
-
+        subtreeFlagsStr = addSubtreeFlags(subtreeFlagsStr,child.flagsStr)
         // When a fiber is cloned, its actualDuration is reset to 0. This value will
         // only be updated if work is done on the fiber (i.e. it doesn't bailout).
         // When work is done, it should bubble to the parent's actualDuration. If
@@ -726,8 +728,9 @@ function bubbleProperties(completedWork: Fiber) {
         );
 
         subtreeFlags |= child.subtreeFlags;
+        subtreeFlagsStr = addSubtreeFlags(subtreeFlagsStr,child.subtreeFlagsStr)
         subtreeFlags |= child.flags;
-
+        subtreeFlagsStr = addSubtreeFlags(subtreeFlagsStr,child.flagsStr)
         // Update the return pointer so the tree is consistent. This is a code
         // smell because it assumes the commit phase is never concurrent with
         // the render phase. Will address during refactor to alternate model.
@@ -738,6 +741,7 @@ function bubbleProperties(completedWork: Fiber) {
     }
 
     completedWork.subtreeFlags |= subtreeFlags;
+    completedWork.subtreeFlagsStr = addSubtreeFlags(completedWork.subtreeFlagsStr,subtreeFlagsStr)
   } else {
     // Bubble up the earliest expiration time.
     if (enableProfilerTimer && (completedWork.mode & ProfileMode) !== NoMode) {
@@ -757,8 +761,9 @@ function bubbleProperties(completedWork: Fiber) {
         // flags have a lifetime only of a single render + commit, so we should
         // ignore them.
         subtreeFlags |= child.subtreeFlags & StaticMask;
+        subtreeFlagsStr = addSubtreeFlags(subtreeFlagsStr, andSubtreeFlags(child.subtreeFlagsStr, 'StaticMask'))
         subtreeFlags |= child.flags & StaticMask;
-
+        subtreeFlagsStr = addSubtreeFlags(subtreeFlagsStr, andSubtreeFlags(child.flagsStr, 'StaticMask'))
         treeBaseDuration += child.treeBaseDuration;
         child = child.sibling;
       }
@@ -777,8 +782,9 @@ function bubbleProperties(completedWork: Fiber) {
         // flags have a lifetime only of a single render + commit, so we should
         // ignore them.
         subtreeFlags |= child.subtreeFlags & StaticMask;
+        subtreeFlagsStr = addSubtreeFlags(subtreeFlagsStr, andSubtreeFlags(child.subtreeFlagsStr, 'StaticMask'))
         subtreeFlags |= child.flags & StaticMask;
-
+        subtreeFlagsStr = addSubtreeFlags(subtreeFlagsStr, andSubtreeFlags(child.flagsStr, 'StaticMask'))
         // Update the return pointer so the tree is consistent. This is a code
         // smell because it assumes the commit phase is never concurrent with
         // the render phase. Will address during refactor to alternate model.
@@ -789,6 +795,7 @@ function bubbleProperties(completedWork: Fiber) {
     }
 
     completedWork.subtreeFlags |= subtreeFlags;
+    completedWork.subtreeFlagsStr = addSubtreeFlags(completedWork.subtreeFlagsStr, subtreeFlagsStr)
   }
 
   completedWork.childLanes = newChildLanes;
@@ -857,7 +864,7 @@ function completeWork(
           // if the previous render was null (so the the container would already be empty).
           // mount时 会打上Snapshot的标记
           workInProgress.flags |= Snapshot;
-          workInProgress.flagsStr = addFlags(workInProgress.flagsStr, 'Snapshot');
+          workInProgress.flagsStr = addSubtreeFlags(workInProgress.flagsStr, 'Snapshot');
         }
       }
       updateHostContainer(current, workInProgress);
@@ -1043,7 +1050,7 @@ function completeWork(
             // If something suspended, schedule an effect to attach retry listeners.
             // So we might as well always mark this.
             workInProgress.flags |= Update;
-            workInProgress.flagsStr = addFlags(workInProgress.flagsStr, 'Update');
+            workInProgress.flagsStr = addSubtreeFlags(workInProgress.flagsStr, 'Update');
             bubbleProperties(workInProgress);
             if (enableProfilerTimer) {
               if ((workInProgress.mode & ProfileMode) !== NoMode) {
@@ -1130,7 +1137,7 @@ function completeWork(
           // retry listener to the promise. This flag is also used to hide the
           // primary children.
           workInProgress.flags |= Update;
-          workInProgress.flagsStr = addFlags(workInProgress.flagsStr, 'Update');
+          workInProgress.flagsStr = addSubtreeFlags(workInProgress.flagsStr, 'Update');
         }
       }
       if (supportsMutation) {
@@ -1142,7 +1149,7 @@ function completeWork(
           // *unhide* children that were previously hidden, so check if this
           // is currently timed out, too.
           workInProgress.flags |= Update;
-          workInProgress.flagsStr = addFlags(workInProgress.flagsStr, 'Update');
+          workInProgress.flagsStr = addSubtreeFlags(workInProgress.flagsStr, 'Update');
         }
       }
       if (
@@ -1152,7 +1159,7 @@ function completeWork(
       ) {
         // Always notify the callback
         workInProgress.flags |= Update;
-        workInProgress.flagsStr = addFlags(workInProgress.flagsStr, 'Update');
+        workInProgress.flagsStr = addSubtreeFlags(workInProgress.flagsStr, 'Update');
       }
       bubbleProperties(workInProgress);
       if (enableProfilerTimer) {
@@ -1233,7 +1240,7 @@ function completeWork(
               if (suspended !== null) {
                 didSuspendAlready = true;
                 workInProgress.flags |= DidCapture;
-                workInProgress.flagsStr = addFlags(workInProgress.flagsStr, 'DidCapture');
+                workInProgress.flagsStr = addSubtreeFlags(workInProgress.flagsStr, 'DidCapture');
                 cutOffTailIfNeeded(renderState, false);
 
                 // If this is a newly suspended tree, it might not get committed as
@@ -1252,7 +1259,7 @@ function completeWork(
                 if (newThennables !== null) {
                   workInProgress.updateQueue = newThennables;
                   workInProgress.flags |= Update;
-                  workInProgress.flagsStr = addFlags(workInProgress.flagsStr, 'Update');
+                  workInProgress.flagsStr = addSubtreeFlags(workInProgress.flagsStr, 'Update');
                 }
 
                 // Rerender the whole list, but this time, we'll force fallbacks
@@ -1260,6 +1267,7 @@ function completeWork(
                 // Reset the effect flags before doing the second pass since that's now invalid.
                 // Reset the child fibers to their original state.
                 workInProgress.subtreeFlags = NoFlags;
+                workInProgress.subtreeFlagsStr = ''
                 resetChildFibers(workInProgress, renderLanes);
 
                 // Set up the Suspense Context to force suspense and immediately
@@ -1283,7 +1291,7 @@ function completeWork(
             // left in the tail. We'll just give up further attempts to render
             // the main content and only render fallbacks.
             workInProgress.flags |= DidCapture;
-            workInProgress.flagsStr = addFlags(workInProgress.flagsStr, 'DidCapture');
+            workInProgress.flagsStr = addSubtreeFlags(workInProgress.flagsStr, 'DidCapture');
             didSuspendAlready = true;
 
             cutOffTailIfNeeded(renderState, false);
@@ -1311,7 +1319,7 @@ function completeWork(
           const suspended = findFirstSuspended(renderedTail);
           if (suspended !== null) {
             workInProgress.flags |= DidCapture;
-            workInProgress.flagsStr = addFlags(workInProgress.flagsStr, 'DidCapture');
+            workInProgress.flagsStr = addSubtreeFlags(workInProgress.flagsStr, 'DidCapture');
             didSuspendAlready = true;
 
             // Ensure we transfer the update queue to the parent so that it doesn't
@@ -1320,7 +1328,7 @@ function completeWork(
             if (newThennables !== null) {
               workInProgress.updateQueue = newThennables;
               workInProgress.flags |= Update;
-              workInProgress.flagsStr = addFlags(workInProgress.flagsStr, 'Update');
+              workInProgress.flagsStr = addSubtreeFlags(workInProgress.flagsStr, 'Update');
             }
 
             cutOffTailIfNeeded(renderState, true);
@@ -1347,7 +1355,7 @@ function completeWork(
             // attempts to render the main content and only render fallbacks.
             // The assumption is that this is usually faster.
             workInProgress.flags |= DidCapture;
-            workInProgress.flagsStr = addFlags(workInProgress.flagsStr, 'DidCapture');
+            workInProgress.flagsStr = addSubtreeFlags(workInProgress.flagsStr, 'DidCapture');
             didSuspendAlready = true;
 
             cutOffTailIfNeeded(renderState, false);
@@ -1451,7 +1459,7 @@ function completeWork(
           newProps.mode !== 'unstable-defer-without-hiding'
         ) {
           workInProgress.flags |= Update;
-          workInProgress.flagsStr = addFlags(workInProgress.flagsStr, 'Update');
+          workInProgress.flagsStr = addSubtreeFlags(workInProgress.flagsStr, 'Update');
         }
       }
 
