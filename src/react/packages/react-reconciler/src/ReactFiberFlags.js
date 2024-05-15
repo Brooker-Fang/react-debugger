@@ -66,6 +66,7 @@ export const NeedsPropagation = /*             */ 0b0001000000000000000000;
 // This enables us to defer more work in the unmount case,
 // since we can defer traversing the tree during layout to look for Passive effects,
 // and instead rely on the static flag as a signal that there may be cleanup work.
+// 目前来说没什么用
 export const PassiveStatic = /*                */ 0b0010000000000000000000;
 
 // These flags allow us to traverse to fibers that have effects on mount

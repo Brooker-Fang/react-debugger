@@ -114,6 +114,7 @@ import {pushInterleavedQueue} from './ReactFiberInterleavedUpdates.old';
 import invariant from 'shared/invariant';
 
 import {disableLogs, reenableLogs} from 'shared/ConsolePatchingDev';
+import addFlags from '../../shared/flagsStrAction';
 
 export type Update<State> = {|
   // TODO: Temporary field. Will remove this by storing a map of
@@ -605,6 +606,7 @@ export function processUpdateQueue<State>(
         // 如果ReactDOM.render有回调函数
         if (callback !== null) {
           workInProgress.flags |= Callback;
+          workInProgress.flagsStr = addFlags(workInProgress, workInProgress.flagsStr, 'Callback')
           const effects = queue.effects;
           if (effects === null) {
             queue.effects = [update];

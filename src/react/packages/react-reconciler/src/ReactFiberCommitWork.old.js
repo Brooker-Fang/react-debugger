@@ -1446,7 +1446,7 @@ function commitPlacement(finishedWork: Fiber): void {
     resetTextContent(parent);
     // Clear ContentReset from the effect tag
     parentFiber.flags &= ~ContentReset;
-    parentFiber.flagsStr = removeFlags(parentFiber.flagsStr, 'ContentReset');
+    parentFiber.flagsStr = removeFlags(parentFiber, parentFiber.flagsStr, 'ContentReset');
   }
   // 查看当前节点是否有下一个兄弟节点
   // 有，则执行insertBefore
@@ -2163,7 +2163,7 @@ function commitMutationEffectsOnFiber(
       // and isMounted is deprecated anyway so we should be able to kill this.
       // 将flags 重置为1，即已经执行完成
       finishedWork.flags &= ~Placement;
-      finishedWork.flagsStr = removeFlags(finishedWork.flagsStr, 'Placement')
+      finishedWork.flagsStr = removeFlags(finishedWork, finishedWork.flagsStr, 'Placement')
       break;
     }
     // 插入并更新
@@ -2173,7 +2173,7 @@ function commitMutationEffectsOnFiber(
       // Clear the "placement" from effect tag so that we know that this is
       // inserted, before any life-cycles like componentDidMount gets called.
       finishedWork.flags &= ~Placement;
-      finishedWork.flagsStr = removeFlags(finishedWork.flagsStr, 'Placement')
+      finishedWork.flagsStr = removeFlags(finishedWork, finishedWork.flagsStr, 'Placement')
       // Update
       const current = finishedWork.alternate;
       commitWork(current, finishedWork);
@@ -2442,11 +2442,11 @@ function commitPassiveUnmountEffects_complete() {
 function commitPassiveUnmountOnFiber(finishedWork: Fiber): void {
   if (__DEV__) {
     finishedWork.flags &= ~PassiveUnmountPendingDev;
-    finishedWork.flagsStr = removeFlags(finishedWork.flagsStr, 'PassiveUnmountPendingDev');
+    finishedWork.flagsStr = removeFlags(finishedWork, finishedWork.flagsStr, 'PassiveUnmountPendingDev');
     const alternate = finishedWork.alternate;
     if (alternate !== null) {
       alternate.flags &= ~PassiveUnmountPendingDev;
-      alternate.flagsStr = removeFlags(alternate.flagsStr, 'PassiveUnmountPendingDev');
+      alternate.flagsStr = removeFlags(alternate, alternate.flagsStr, 'PassiveUnmountPendingDev');
     }
   }
 

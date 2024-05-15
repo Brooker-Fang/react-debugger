@@ -1175,6 +1175,7 @@ function performSyncWorkOnRoot(root) {
   console.red('进入commit 阶段 ======')
   console.log('finishedWork===', finishedWork)
   console.log('fiberRoot===', root)
+  debugger
   commitRoot(root);
 
   // Before exiting, make sure there's a callback scheduled for the next
@@ -1866,7 +1867,7 @@ function completeUnitOfWork(unitOfWork: Fiber): void {
       }
       
     } else {
-      
+      // 有异常
       // This fiber did not complete because something threw. Pop values off
       // the stack without entering the complete phase. If this is a boundary,
       // capture values if possible.
@@ -1880,7 +1881,8 @@ function completeUnitOfWork(unitOfWork: Fiber): void {
         // Since we're restarting, remove anything that is not a host effect
         // from the effect tag.
         next.flags &= HostEffectMask;
-        next.flagsStr = andFlags(next.flagsStr, 'HostEffectMask');
+        debugger
+        next.flagsStr = andFlags(next, next.flagsStr, 'HostEffectMask');
         workInProgress = next;
         return;
       }
@@ -1905,7 +1907,7 @@ function completeUnitOfWork(unitOfWork: Fiber): void {
       if (returnFiber !== null) {
         // Mark the parent fiber as incomplete and clear its subtree flags.
         returnFiber.flags |= Incomplete;
-        returnFiber.flagsStr = addFlags(returnFiber.flagsStr, 'Incomplete');
+        returnFiber.flagsStr = addFlags(returnFiber, returnFiber.flagsStr, 'Incomplete');
         returnFiber.subtreeFlags = NoFlags;
         returnFiber.subtreeFlagsStr = ''
         returnFiber.deletions = null;

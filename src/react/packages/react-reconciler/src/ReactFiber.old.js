@@ -302,7 +302,7 @@ export function createWorkInProgress(current: Fiber, pendingProps: any): Fiber {
   // Reset all effects except static ones.
   // Static effects are not specific to a render.
   workInProgress.flags = current.flags & StaticMask;
-  workInProgress.flagsStr = andFlags(current.flagsStr, 'StaticMask')
+  workInProgress.flagsStr = andFlags(current, current.flagsStr, 'StaticMask')
   workInProgress.childLanes = current.childLanes;
   workInProgress.lanes = current.lanes;
 
@@ -367,7 +367,7 @@ export function resetWorkInProgress(workInProgress: Fiber, renderLanes: Lanes) {
   // Reset the effect flags but keep any Placement tags, since that's something
   // that child fiber is setting, not the reconciliation.
   workInProgress.flags &= StaticMask | Placement;
-  workInProgress.flagsStr = andFlags(workInProgress.flagsStr, 'StaticMask', 'Placement')
+  workInProgress.flagsStr = andFlags(workInProgress, workInProgress.flagsStr, 'StaticMask', 'Placement')
   // The effects are no longer valid.
 
   const current = workInProgress.alternate;

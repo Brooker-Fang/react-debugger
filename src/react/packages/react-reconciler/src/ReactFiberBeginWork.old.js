@@ -411,7 +411,7 @@ function updateForwardRef(
 
   // React DevTools reads this flag.
   workInProgress.flags |= PerformedWork;
-  workInProgress.flagsStr = addFlags(workInProgress.flagsStr, 'PerformedWork')
+  workInProgress.flagsStr = addFlags(workInProgress, workInProgress.flagsStr, 'PerformedWork')
   reconcileChildren(current, workInProgress, nextChildren, renderLanes);
   return workInProgress.child;
 }
@@ -508,7 +508,7 @@ function updateMemoComponent(
   }
   // React DevTools reads this flag.
   workInProgress.flags |= PerformedWork;
-  workInProgress.flagsStr = addFlags(workInProgress.flagsStr, 'PerformedWork')
+  workInProgress.flagsStr = addFlags(workInProgress, workInProgress.flagsStr, 'PerformedWork')
   const newChild = createWorkInProgress(currentChild, nextProps);
   newChild.ref = workInProgress.ref;
   newChild.return = workInProgress;
@@ -856,7 +856,7 @@ function updateProfiler(
 ) {
   if (enableProfilerTimer) {
     workInProgress.flags |= Update;
-    workInProgress.flagsStr = addFlags(workInProgress.flagsStr, 'Update')
+    workInProgress.flagsStr = addFlags(workInProgress, workInProgress.flagsStr, 'Update')
     // Reset effect durations for the next eventual effect phase.
     // These are reset during render to allow the DevTools commit hook a chance to read them,
     const stateNode = workInProgress.stateNode;
@@ -877,7 +877,7 @@ function markRef(current: Fiber | null, workInProgress: Fiber) {
   ) {
     // Schedule a Ref effect
     workInProgress.flags |= Ref;
-    workInProgress.flagsStr = addFlags(workInProgress.flagsStr, 'Ref');
+    workInProgress.flagsStr = addFlags(workInProgress, workInProgress.flagsStr, 'Ref');
   }
 }
 
@@ -962,7 +962,7 @@ function updateFunctionComponent(
 
   // React DevTools reads this flag.
   workInProgress.flags |= PerformedWork;
-  workInProgress.flagsStr = addFlags(workInProgress.flagsStr, 'PerformedWork')
+  workInProgress.flagsStr = addFlags(workInProgress, workInProgress.flagsStr, 'PerformedWork')
   reconcileChildren(current, workInProgress, nextChildren, renderLanes);
   return workInProgress.child;
 }
@@ -1014,7 +1014,7 @@ function updateClassComponent(
       workInProgress.alternate = null;
       // Since this is conceptually a new fiber, schedule a Placement effect
       workInProgress.flags |= Placement;
-      workInProgress.flagsStr = addFlags(workInProgress.flagsStr, 'Placement')
+      workInProgress.flagsStr = addFlags(workInProgress, workInProgress.flagsStr, 'Placement')
     }
     // In the initial pass we might need to construct the instance.
     constructClassInstance(workInProgress, Component, nextProps);
@@ -1126,7 +1126,7 @@ function finishClassComponent(
 
   // React DevTools reads this flag.
   workInProgress.flags |= PerformedWork;
-  workInProgress.flagsStr = addFlags(workInProgress.flagsStr, 'PerformedWork')
+  workInProgress.flagsStr = addFlags(workInProgress, workInProgress.flagsStr, 'PerformedWork')
   if (current !== null && didCaptureError) {
     // If we're recovering from an error, reconcile without reusing any of
     // the existing children. Conceptually, the normal children and the children
@@ -1170,6 +1170,7 @@ function pushHostRootContext(workInProgress) {
 }
 
 function updateHostRoot(current, workInProgress, renderLanes) {
+  
   pushHostRootContext(workInProgress);
   // 获取更新队列
   const updateQueue = workInProgress.updateQueue;
@@ -1193,7 +1194,7 @@ function updateHostRoot(current, workInProgress, renderLanes) {
   // 获取RootFiber 的 vDom
   const nextState = workInProgress.memoizedState;
   const root: FiberRoot = workInProgress.stateNode;
-
+  
   if (enableCache) {
     const nextCache: Cache = nextState.cache;
     pushRootCachePool(root);
@@ -1295,7 +1296,7 @@ function updateHostComponent(
     // If we're switching from a direct text child to a normal child, or to
     // empty, we need to schedule the text content to be reset.
     workInProgress.flags |= ContentReset;
-    workInProgress.flagsStr = addFlags(workInProgress.flagsStr, 'ContentReset')
+    workInProgress.flagsStr = addFlags(workInProgress, workInProgress.flagsStr, 'ContentReset')
   }
 
   markRef(current, workInProgress);
@@ -1328,7 +1329,7 @@ function mountLazyComponent(
     workInProgress.alternate = null;
     // Since this is conceptually a new fiber, schedule a Placement effect
     workInProgress.flags |= Placement;
-    workInProgress.flagsStr = addFlags(workInProgress.flagsStr, 'Placement')
+    workInProgress.flagsStr = addFlags(workInProgress, workInProgress.flagsStr, 'Placement')
   }
 
   const props = workInProgress.pendingProps;
@@ -1451,7 +1452,7 @@ function mountIncompleteClassComponent(
     workInProgress.alternate = null;
     // Since this is conceptually a new fiber, schedule a Placement effect
     workInProgress.flags |= Placement;
-    workInProgress.flagsStr = addFlags(workInProgress.flagsStr, 'Placement')
+    workInProgress.flagsStr = addFlags(workInProgress, workInProgress.flagsStr, 'Placement')
   }
 
   // Promote the fiber to a class and try rendering again.
@@ -1499,7 +1500,7 @@ function mountIndeterminateComponent(
     workInProgress.alternate = null;
     // Since this is conceptually a new fiber, schedule a Placement effect
     workInProgress.flags |= Placement;
-    workInProgress.flagsStr = addFlags(workInProgress.flagsStr, 'Placement')
+    workInProgress.flagsStr = addFlags(workInProgress, workInProgress.flagsStr, 'Placement')
     
   }
   const props = workInProgress.pendingProps;
@@ -1561,7 +1562,7 @@ function mountIndeterminateComponent(
   // }
   // React DevTools reads this flag.
   workInProgress.flags |= PerformedWork;
-  workInProgress.flagsStr = addFlags(workInProgress.flagsStr, 'PerformedWork')
+  workInProgress.flagsStr = addFlags(workInProgress, workInProgress.flagsStr, 'PerformedWork')
   // if (__DEV__) {
   //   // Support for module components is deprecated and is removed behind a flag.
   //   // Whether or not it would crash later, we want to show a good message in DEV first.
@@ -1862,7 +1863,7 @@ function updateSuspenseComponent(current, workInProgress, renderLanes) {
   if (__DEV__) {
     if (shouldSuspend(workInProgress)) {
       workInProgress.flags |= DidCapture;
-      workInProgress.flagsStr = addFlags(workInProgress.flagsStr, 'DidCapture')
+      workInProgress.flagsStr = addFlags(workInProgress, workInProgress.flagsStr, 'DidCapture')
     }
   }
 
@@ -1884,7 +1885,7 @@ function updateSuspenseComponent(current, workInProgress, renderLanes) {
     // rendering the fallback children.
     showFallback = true;
     workInProgress.flags &= ~DidCapture;
-    workInProgress.flagsStr = removeFlags(workInProgress.flagsStr, 'DidCapture')
+    workInProgress.flagsStr = removeFlags(workInProgress, workInProgress.flagsStr, 'DidCapture')
   } else {
     // Attempting the main content
     if (
@@ -2038,7 +2039,7 @@ function updateSuspenseComponent(current, workInProgress, renderLanes) {
             // The dehydrated completion pass expects this flag to be there
             // but the normal suspense pass doesn't.
             workInProgress.flags |= DidCapture;
-            workInProgress.flagsStr = addFlags(workInProgress.flagsStr, 'DidCapture')
+            workInProgress.flagsStr = addFlags(workInProgress, workInProgress.flagsStr, 'DidCapture')
             return null;
           } else {
             // Suspended but we should no longer be in dehydrated mode.
@@ -2261,7 +2262,7 @@ function updateSuspensePrimaryChildren(
     if (deletions === null) {
       workInProgress.deletions = [currentFallbackChildFragment];
       workInProgress.flags |= ChildDeletion;
-      workInProgress.flagsStr = addFlags(workInProgress.flagsStr, 'ChildDeletion')
+      workInProgress.flagsStr = addFlags(workInProgress, workInProgress.flagsStr, 'ChildDeletion')
     } else {
       deletions.push(currentFallbackChildFragment);
     }
@@ -2334,7 +2335,7 @@ function updateSuspenseFallbackChildren(
     // the current tree; see previous branch.)
     primaryChildFragment.subtreeFlags =
       currentPrimaryChildFragment.subtreeFlags & StaticMask;
-      primaryChildFragment.subtreeFlagsStr = addSubtreeFlags(currentPrimaryChildFragment.subtreeFlagsStr, 'StaticMask');
+      primaryChildFragment.subtreeFlagsStr = addSubtreeFlags(currentPrimaryChildFragment, currentPrimaryChildFragment.subtreeFlagsStr, 'StaticMask');
   }
   let fallbackChildFragment;
   if (currentFallbackChildFragment !== null) {
@@ -2352,7 +2353,7 @@ function updateSuspenseFallbackChildren(
     // Needs a placement effect because the parent (the Suspense boundary) already
     // mounted but this is a new fiber.
     fallbackChildFragment.flags |= Placement;
-    workInProgress.flagsStr = addFlags(workInProgress.flagsStr, 'Placement')
+    workInProgress.flagsStr = addFlags(workInProgress, workInProgress.flagsStr, 'Placement')
   }
 
   fallbackChildFragment.return = workInProgress;
@@ -2382,7 +2383,7 @@ function retrySuspenseComponentWithoutHydrating(
   // Needs a placement effect because the parent (the Suspense boundary) already
   // mounted but this is a new fiber.
   primaryChildFragment.flags |= Placement;
-  workInProgress.flagsStr = addFlags(workInProgress.flagsStr, 'Placement')
+  workInProgress.flagsStr = addFlags(workInProgress, workInProgress.flagsStr, 'Placement')
   workInProgress.memoizedState = null;
 
   return primaryChildFragment;
@@ -2411,7 +2412,7 @@ function mountSuspenseFallbackAfterRetryWithoutHydrating(
   // Needs a placement effect because the parent (the Suspense
   // boundary) already mounted but this is a new fiber.
   fallbackChildFragment.flags |= Placement;
-  fallbackChildFragment.flagsStr = addFlags(fallbackChildFragment.flagsStr, 'Placement')
+  fallbackChildFragment.flagsStr = addFlags(fallbackChildFragment, fallbackChildFragment.flagsStr, 'Placement')
   primaryChildFragment.return = workInProgress;
   fallbackChildFragment.return = workInProgress;
   primaryChildFragment.sibling = fallbackChildFragment;
@@ -2577,7 +2578,7 @@ function updateDehydratedSuspenseComponent(
     // these should update this boundary to the permanent Fallback state instead.
     // Mark it as having captured (i.e. suspended).
     workInProgress.flags |= DidCapture;
-    workInProgress.flagsStr = addFlags(workInProgress.flagsStr, 'DidCapture')
+    workInProgress.flagsStr = addFlags(workInProgress, workInProgress.flagsStr, 'DidCapture')
     // Leave the child in place. I.e. the dehydrated fragment.
     workInProgress.child = current.child;
     // Register a callback to retry this boundary once the server has sent the result.
@@ -2893,7 +2894,7 @@ function updateSuspenseListComponent(
       ForceSuspenseFallback,
     );
     workInProgress.flags |= DidCapture;
-    workInProgress.flagsStr = addFlags(workInProgress.flagsStr, 'DidCapture')
+    workInProgress.flagsStr = addFlags(workInProgress, workInProgress.flagsStr, 'DidCapture')
   } else {
     const didSuspendBefore =
       current !== null && (current.flags & DidCapture) !== NoFlags;
@@ -3149,7 +3150,7 @@ function updateContextConsumer(
 
   // React DevTools reads this flag.
   workInProgress.flags |= PerformedWork;
-  workInProgress.flagsStr = addFlags(workInProgress.flagsStr, 'PerformedWork');
+  workInProgress.flagsStr = addFlags(workInProgress, workInProgress.flagsStr, 'PerformedWork');
   reconcileChildren(current, workInProgress, newChildren, renderLanes);
   return workInProgress.child;
 }
@@ -3258,13 +3259,13 @@ function remountFiber(
     if (deletions === null) {
       returnFiber.deletions = [current];
       returnFiber.flags |= ChildDeletion;
-      workInProgress.flagsStr = addFlags(workInProgress.flagsStr, 'ChildDeletion')
+      workInProgress.flagsStr = addFlags(workInProgress, workInProgress.flagsStr, 'ChildDeletion')
     } else {
       deletions.push(current);
     }
 
     newWorkInProgress.flags |= Placement;
-    workInProgress.flagsStr = addFlags(workInProgress.flagsStr, 'Placement')
+    workInProgress.flagsStr = addFlags(workInProgress, workInProgress.flagsStr, 'Placement')
     // Restart work from the new fiber.
     return newWorkInProgress;
   } else {
@@ -3376,7 +3377,7 @@ function beginWork(
             );
             if (hasChildWork) {
               workInProgress.flags |= Update;
-              workInProgress.flagsStr = addFlags(workInProgress.flagsStr, 'Update')
+              workInProgress.flagsStr = addFlags(workInProgress, workInProgress.flagsStr, 'Update')
             }
 
             // Reset effect durations for the next eventual effect phase.
@@ -3399,7 +3400,7 @@ function beginWork(
                 // been unsuspended it has committed as a resolved Suspense component.
                 // If it needs to be retried, it should have work scheduled on it.
                 workInProgress.flags |= DidCapture;
-                workInProgress.flagsStr = addFlags(workInProgress.flagsStr, 'DidCapture');
+                workInProgress.flagsStr = addFlags(workInProgress, workInProgress.flagsStr, 'DidCapture');
                 // We should never render the children of a dehydrated boundary until we
                 // upgrade it. We return null instead of bailoutOnAlreadyFinishedWork.
                 return null;
@@ -3497,7 +3498,7 @@ function beginWork(
             // them got retried so they'll still be blocked in the same way
             // as before. We can fast bail out.
             workInProgress.flags |= DidCapture;
-            workInProgress.flagsStr = addFlags(workInProgress.flagsStr, 'DidCapture');
+            workInProgress.flagsStr = addFlags(workInProgress, workInProgress.flagsStr, 'DidCapture');
           }
 
           // If nothing suspended before and we're rendering the same children,

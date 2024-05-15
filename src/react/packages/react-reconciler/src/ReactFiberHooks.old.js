@@ -1413,7 +1413,7 @@ function mountEffectImpl(fiberFlags, hookFlags, create, deps): void {
   const hook = mountWorkInProgressHook();
   const nextDeps = deps === undefined ? null : deps;
   currentlyRenderingFiber.flags |= fiberFlags;
-  currentlyRenderingFiber.flagsStr = addFlagsToString(currentlyRenderingFiber.flagsStr, fiberFlags);
+  currentlyRenderingFiber.flagsStr = addFlagsToString(currentlyRenderingFiber, currentlyRenderingFiber.flagsStr, fiberFlags);
   //useEffect hook 的 memoizedState = effects环状链表
   hook.memoizedState = pushEffect(
     HookHasEffect | hookFlags,
@@ -1442,7 +1442,7 @@ function updateEffectImpl(fiberFlags, hookFlags, create, deps): void {
   }
 
   currentlyRenderingFiber.flags |= fiberFlags;
-  currentlyRenderingFiber.flagsStr = addFlagsToString(currentlyRenderingFiber.flagsStr, fiberFlags);
+  currentlyRenderingFiber.flagsStr = addFlagsToString(currentlyRenderingFiber, currentlyRenderingFiber.flagsStr, fiberFlags);
   hook.memoizedState = pushEffect(
     HookHasEffect | hookFlags,
     create,

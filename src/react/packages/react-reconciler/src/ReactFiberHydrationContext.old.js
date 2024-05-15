@@ -129,7 +129,7 @@ function deleteHydratableInstance(
   if (deletions === null) {
     returnFiber.deletions = [childToDelete];
     returnFiber.flags |= ChildDeletion;
-    returnFiber.flagsStr = addFlags(returnFiber.flagsStr, 'ChildDeletion');
+    returnFiber.flagsStr = addFlags(returnFiber, returnFiber.flagsStr, 'ChildDeletion');
   } else {
     deletions.push(childToDelete);
   }

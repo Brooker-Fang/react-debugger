@@ -274,7 +274,7 @@ function ChildReconciler(shouldTrackSideEffects) {
     if (deletions === null) {
       returnFiber.deletions = [childToDelete];
       returnFiber.flags |= ChildDeletion;
-      returnFiber.flagsStr = addFlags(returnFiber.flagsStr, 'ChildDeletion')
+      returnFiber.flagsStr = addFlags(returnFiber, returnFiber.flagsStr, 'ChildDeletion')
     } else {
       deletions.push(childToDelete);
     }
@@ -345,7 +345,7 @@ function ChildReconciler(shouldTrackSideEffects) {
       if (oldIndex < lastPlacedIndex) {
         // This is a move.
         newFiber.flags |= Placement;
-        newFiber.flagsStr = addFlags(newFiber.flagsStr, 'Placement')
+        newFiber.flagsStr = addFlags(newFiber,newFiber.flagsStr, 'Placement')
         return lastPlacedIndex;
       } else {
         // This item can stay in place.
@@ -354,7 +354,7 @@ function ChildReconciler(shouldTrackSideEffects) {
     } else {
       // This is an insertion.
       newFiber.flags |= Placement;
-      newFiber.flagsStr = addFlags(newFiber.flagsStr, 'Placement')
+      newFiber.flagsStr = addFlags(newFiber, newFiber.flagsStr, 'Placement')
       return lastPlacedIndex;
     }
   }
@@ -364,7 +364,7 @@ function ChildReconciler(shouldTrackSideEffects) {
     // placement for inserting new children.
     if (shouldTrackSideEffects && newFiber.alternate === null) {
       newFiber.flags |= Placement;
-      newFiber.flagsStr = addFlags(newFiber.flagsStr, 'Placement')
+      newFiber.flagsStr = addFlags(newFiber, newFiber.flagsStr, 'Placement')
     }
     return newFiber;
   }

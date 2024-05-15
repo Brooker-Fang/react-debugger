@@ -7,9 +7,7 @@ console.red = (...args) => {
     console.info(`%c${arg}`, 'color: red;')
   })
 }
-ReactDOM.render(<App key={"app"}></App>, document.getElementById("root"), () => {
-  console.log('rootFiber callback')
-});
+ReactDOM.render(<App key={"app"}></App>, document.getElementById("root"));
 
 // ReactDOM.createRoot(
 //   document.getElementById('root')

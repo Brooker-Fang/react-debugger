@@ -920,10 +920,10 @@ function mountClassInstance(
     ) {
       // Never double-invoke effects for legacy roots.
       workInProgress.flags |= MountLayoutDev | Update;
-      workInProgress.flagsStr = addFlags(workInProgress.flagsStr, 'MountLayoutDev', 'Update')
+      workInProgress.flagsStr = addFlags(workInProgress, workInProgress.flagsStr, 'MountLayoutDev', 'Update')
     } else {
       workInProgress.flags |= Update;
-      workInProgress.flagsStr = addFlags(workInProgress.flagsStr, 'Update')
+      workInProgress.flagsStr = addFlags(workInProgress, workInProgress.flagsStr, 'Update')
     }
   }
 }
@@ -1001,10 +1001,10 @@ function resumeMountClassInstance(
       ) {
         // Never double-invoke effects for legacy roots.
         workInProgress.flags |= MountLayoutDev | Update;
-        workInProgress.flagsStr = addFlags(workInProgress.flagsStr,'MountLayoutDev', 'Update')
+        workInProgress.flagsStr = addFlags(workInProgress, workInProgress.flagsStr,'MountLayoutDev', 'Update')
       } else {
         workInProgress.flags |= Update;
-        workInProgress.flagsStr = addFlags(workInProgress.flagsStr, 'Update')
+        workInProgress.flagsStr = addFlags(workInProgress, workInProgress.flagsStr, 'Update')
       }
     }
     return false;
@@ -1057,7 +1057,7 @@ function resumeMountClassInstance(
         workInProgress.flags |= MountLayoutDev | Update;
       } else {
         workInProgress.flags |= Update;
-        workInProgress.flagsStr = addFlags(workInProgress.flagsStr, 'Update')
+        workInProgress.flagsStr = addFlags(workInProgress, workInProgress.flagsStr, 'Update')
       }
     }
   } else {
@@ -1073,7 +1073,7 @@ function resumeMountClassInstance(
         workInProgress.flags |= MountLayoutDev | Update;
       } else {
         workInProgress.flags |= Update;
-        workInProgress.flagsStr = addFlags(workInProgress.flagsStr, 'Update')
+        workInProgress.flagsStr = addFlags(workInProgress, workInProgress.flagsStr, 'Update')
       }
     }
 
@@ -1178,7 +1178,7 @@ function updateClassInstance(
         oldState !== current.memoizedState
       ) {
         workInProgress.flags |= Update;
-        workInProgress.flagsStr = addFlags(workInProgress.flagsStr, 'Update')
+        workInProgress.flagsStr = addFlags(workInProgress, workInProgress.flagsStr, 'Update')
       }
     }
     if (typeof instance.getSnapshotBeforeUpdate === 'function') {
@@ -1187,7 +1187,7 @@ function updateClassInstance(
         oldState !== current.memoizedState
       ) {
         workInProgress.flags |= Snapshot;
-        workInProgress.flagsStr = addFlags(workInProgress.flagsStr, 'Snapshot')
+        workInProgress.flagsStr = addFlags(workInProgress, workInProgress.flagsStr, 'Snapshot')
       }
     }
     return false;
@@ -1240,11 +1240,11 @@ function updateClassInstance(
     }
     if (typeof instance.componentDidUpdate === 'function') {
       workInProgress.flags |= Update;
-      workInProgress.flagsStr = addFlags(workInProgress.flagsStr, 'Update')
+      workInProgress.flagsStr = addFlags(workInProgress, workInProgress.flagsStr, 'Update')
     }
     if (typeof instance.getSnapshotBeforeUpdate === 'function') {
       workInProgress.flags |= Snapshot;
-      workInProgress.flagsStr = addFlags(workInProgress.flagsStr, 'Snapshot')
+      workInProgress.flagsStr = addFlags(workInProgress, workInProgress.flagsStr, 'Snapshot')
     }
   } else {
     // If an update was already in progress, we should schedule an Update
@@ -1255,7 +1255,7 @@ function updateClassInstance(
         oldState !== current.memoizedState
       ) {
         workInProgress.flags |= Update;
-        workInProgress.flagsStr = addFlags(workInProgress.flagsStr, 'Update')
+        workInProgress.flagsStr = addFlags(workInProgress, workInProgress.flagsStr, 'Update')
       }
     }
     if (typeof instance.getSnapshotBeforeUpdate === 'function') {
@@ -1264,7 +1264,7 @@ function updateClassInstance(
         oldState !== current.memoizedState
       ) {
         workInProgress.flags |= Snapshot;
-        workInProgress.flagsStr = addFlags(workInProgress.flagsStr, 'Snapshot')
+        workInProgress.flagsStr = addFlags(workInProgress, workInProgress.flagsStr, 'Snapshot')
       }
     }
 
