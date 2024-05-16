@@ -19,16 +19,17 @@ export const PerformedWork = /*                */ 0b0000000000000000000001;
 // 当前fiber或者子孙fiber 存在 需要插入或移动的 HostComponent或HostText，即即主要是标记 插入或移动
 export const Placement = /*                    */ 0b0000000000000000000010; // 2
 // ClassComponent存在更新，且定义了componentDidMount或者componentDidUpdate方法；
-// HOSTComponent发生属性的变化；HostText发生内容的变化；FC定义了useLayoutEffect
+// HOSTComponent发生属性的变化；HostText发生内容的变化；
+// FC定义了 useLayoutEffect
 export const Update = /*                       */ 0b0000000000000000000100; // 4
 export const PlacementAndUpdate = /*           */ Placement | Update;// 6
 // 需要被删除
 export const Deletion = /*                     */ 0b0000000000000000001000; // 8
 // 有 需要被删除的子HOSTComponent或子 HostText
 export const ChildDeletion = /*                */ 0b0000000000000000010000; // 10
-// 清空HostComponent的文本内容
+// 清空 HostComponent 的文本内容
 export const ContentReset = /*                 */ 0b0000000000000000100000;
-// 当ClassComponent中的this.setState执行时，或ReactDOM.render执行时传递了回调
+// 当 ClassComponent 中的this.setState执行时，或ReactDOM.render执行时传递了回调
 export const Callback = /*                     */ 0b0000000000000001000000;
 export const DidCapture = /*                   */ 0b0000000000000010000000;
 // HostComponent ref属性的创建与更新

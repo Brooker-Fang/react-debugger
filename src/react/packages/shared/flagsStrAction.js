@@ -37,7 +37,7 @@ export const FlagsMap = {
 
 export const traceFlags = (fiber: Fiber | FiberRoot, new_flags?: string) => {
   if (fiber.tag === HostRoot) {
-    debugger
+    
   }
 }
 
@@ -79,7 +79,6 @@ export const removeFlags = (fiber: Fiber | FiberRoot, flags: string, remove_flag
 }
 
 export const andFlags = (fiber: Fiber | FiberRoot, flags: string, ...args: string[]) => {
-  debugger
   if (!flags) {
     return flags
   }

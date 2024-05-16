@@ -1446,6 +1446,7 @@ function commitPlacement(finishedWork: Fiber): void {
     resetTextContent(parent);
     // Clear ContentReset from the effect tag
     parentFiber.flags &= ~ContentReset;
+    debugger
     parentFiber.flagsStr = removeFlags(parentFiber, parentFiber.flagsStr, 'ContentReset');
   }
   // 查看当前节点是否有下一个兄弟节点
@@ -2027,6 +2028,7 @@ function commitMutationEffects_begin(
   root: FiberRoot,
   renderPriorityLevel: LanePriority,
 ) {
+  debugger
   /* 
     向下遍历直到 满足一下条件:
       当前fiber不存在子fiber
@@ -2217,6 +2219,7 @@ function commitLayoutEffects_begin(
   while (nextEffect !== null) {
     const fiber = nextEffect;
     const firstChild = fiber.child;
+    // LayoutMask = Update | Callback | Ref
     if ((fiber.subtreeFlags & LayoutMask) !== NoFlags && firstChild !== null) {
       ensureCorrectReturnPointer(firstChild, fiber);
       nextEffect = firstChild;
@@ -2235,30 +2238,30 @@ function commitLayoutMountEffects_complete(
     const fiber = nextEffect;
     if ((fiber.flags & LayoutMask) !== NoFlags) {
       const current = fiber.alternate;
-      if (__DEV__) {
-        setCurrentDebugFiberInDEV(fiber);
-        invokeGuardedCallback(
-          null,
-          commitLayoutEffectOnFiber,
-          null,
-          root,
-          current,
-          fiber,
-          committedLanes,
-        );
-        if (hasCaughtError()) {
-          const error = clearCaughtError();
-          captureCommitPhaseError(fiber, fiber.return, error);
-        }
-        resetCurrentDebugFiberInDEV();
-      } else {
+      // if (__DEV__) {
+      //   setCurrentDebugFiberInDEV(fiber);
+      //   invokeGuardedCallback(
+      //     null,
+      //     commitLayoutEffectOnFiber,
+      //     null,
+      //     root,
+      //     current,
+      //     fiber,
+      //     committedLanes,
+      //   );
+      //   if (hasCaughtError()) {
+      //     const error = clearCaughtError();
+      //     captureCommitPhaseError(fiber, fiber.return, error);
+      //   }
+      //   resetCurrentDebugFiberInDEV();
+      // } else {
         try {
           // 遍历执行 
           commitLayoutEffectOnFiber(root, current, fiber, committedLanes);
         } catch (error) {
           captureCommitPhaseError(fiber, fiber.return, error);
         }
-      }
+      // }
     }
 
     if (fiber === subtreeRoot) {

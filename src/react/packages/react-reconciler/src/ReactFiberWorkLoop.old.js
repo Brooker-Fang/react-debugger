@@ -1971,6 +1971,7 @@ function commitRootImpl(root, renderPriorityLevel) {
       先执行上一次useEffect的回调函数执行完返回的函数
       在执行本次的useEffect的回调函数 
     */
+   debugger
     flushPassiveEffects();
   } while (rootWithPendingPassiveEffects !== null);
   flushRenderPhaseStrictModeWarningsInDEV();
@@ -2148,13 +2149,13 @@ function commitRootImpl(root, renderPriorityLevel) {
       // Updates scheduled during ref detachment should also be flagged.
       rootCommittingMutationOrLayoutEffects = root;
     }
-
+    
     // The next phase is the mutation phase, where we mutate the host tree.
     // commit第二个子阶段
     //   mutation阶段，执行DOM操作
     //   这个阶段负责 DOM 节点的渲染。在渲染过程中，会遍历 effectList，根据 flags 的不同，执行不同的 DOM 操作。
     commitMutationEffects(root, renderPriorityLevel, finishedWork);
-
+    debugger
     if (shouldFireAfterActiveInstanceBlur) {
       afterActiveInstanceBlur();
     }
@@ -2181,7 +2182,7 @@ function commitRootImpl(root, renderPriorityLevel) {
     // commit第三个子阶段
     //    layout阶段，执行DOM操作后
     //    这个阶段处理 DOM 渲染完毕之后的收尾逻辑。比如调用 componentDidMount/componentDidUpdate，调用 useLayoutEffect 钩子函数的回调等。
-    //    把 fiberRoot 的 current 指针指向 workInProgress Fiber 树
+    //    
     commitLayoutEffects(finishedWork, root, lanes);
     // if (__DEV__) {
     //   if (enableDebugTracing) {
