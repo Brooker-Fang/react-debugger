@@ -153,7 +153,7 @@ import {
   popRootCachePool,
   popCachePool,
 } from './ReactFiberCacheComponent.old';
-import addFlags, { addSubtreeFlags } from '../../shared/flagsStrAction';
+import addFlags, { addSubtreeFlags, andSubtreeFlags } from '../../shared/flagsStrAction';
 
 function markUpdate(workInProgress: Fiber) {
   // Tag the fiber with an update effect. This turns a Placement into

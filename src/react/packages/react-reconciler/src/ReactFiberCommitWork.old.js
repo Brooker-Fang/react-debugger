@@ -664,7 +664,7 @@ function commitLayoutEffectOnFiber(
         ) {
           try {
             startLayoutEffectTimer();
-            // 执行useEffect
+            // 执行useLayoutEffect
             commitHookEffectListMount(HookLayout | HookHasEffect, finishedWork);
           } finally {
             recordLayoutEffectDuration(finishedWork);
@@ -1124,6 +1124,7 @@ function commitUnmount(
     case ForwardRef:
     case MemoComponent:
     case SimpleMemoComponent: {
+      // 执行 useLayoutEffect 的销毁函数
       const updateQueue: FunctionComponentUpdateQueue | null = (current.updateQueue: any);
       if (updateQueue !== null) {
         const lastEffect = updateQueue.lastEffect;
@@ -1155,8 +1156,10 @@ function commitUnmount(
       return;
     }
     case ClassComponent: {
+    //  将当前fiber指向的ref置空
       safelyDetachRef(current, nearestMountedAncestor);
       const instance = current.stateNode;
+       // 执行componentWillUnmount函数
       if (typeof instance.componentWillUnmount === 'function') {
         safelyCallComponentWillUnmount(
           current,
@@ -2043,28 +2046,28 @@ function commitMutationEffects_begin(
     if (deletions !== null) {
       for (let i = 0; i < deletions.length; i++) {
         const childToDelete = deletions[i];
-        if (__DEV__) {
-          invokeGuardedCallback(
-            null,
-            commitDeletion,
-            null,
-            root,
-            childToDelete,
-            fiber,
-            renderPriorityLevel,
-          );
-          if (hasCaughtError()) {
-            const error = clearCaughtError();
-            captureCommitPhaseError(childToDelete, fiber, error);
-          }
-        } else {
+        // if (__DEV__) {
+        //   invokeGuardedCallback(
+        //     null,
+        //     commitDeletion,
+        //     null,
+        //     root,
+        //     childToDelete,
+        //     fiber,
+        //     renderPriorityLevel,
+        //   );
+        //   if (hasCaughtError()) {
+        //     const error = clearCaughtError();
+        //     captureCommitPhaseError(childToDelete, fiber, error);
+        //   }
+        // } else {
           try {
             // 删除DOM元素
             commitDeletion(root, childToDelete, fiber, renderPriorityLevel);
           } catch (error) {
             captureCommitPhaseError(childToDelete, fiber, error);
           }
-        }
+        // }
       }
     }
 
@@ -2086,29 +2089,29 @@ function commitMutationEffects_complete(
 ) {
   while (nextEffect !== null) {
     const fiber = nextEffect;
-    if (__DEV__) {
-      setCurrentDebugFiberInDEV(fiber);
-      invokeGuardedCallback(
-        null,
-        commitMutationEffectsOnFiber,
-        null,
-        fiber,
-        root,
-        renderPriorityLevel,
-      );
-      if (hasCaughtError()) {
-        const error = clearCaughtError();
-        captureCommitPhaseError(fiber, fiber.return, error);
-      }
-      resetCurrentDebugFiberInDEV();
-    } else {
+    // if (__DEV__) {
+    //   setCurrentDebugFiberInDEV(fiber);
+    //   invokeGuardedCallback(
+    //     null,
+    //     commitMutationEffectsOnFiber,
+    //     null,
+    //     fiber,
+    //     root,
+    //     renderPriorityLevel,
+    //   );
+    //   if (hasCaughtError()) {
+    //     const error = clearCaughtError();
+    //     captureCommitPhaseError(fiber, fiber.return, error);
+    //   }
+    //   resetCurrentDebugFiberInDEV();
+    // } else {
       try {
         // 对当前fiber执行flags对应的操作，并重置对应操作的flags，如 flags = Placement，执行插入操作，并重置flags &= ~Placement
         commitMutationEffectsOnFiber(fiber, root, renderPriorityLevel);
       } catch (error) {
         captureCommitPhaseError(fiber, fiber.return, error);
       }
-    }
+    // }
 
     const sibling = fiber.sibling;
     if (sibling !== null) {
@@ -2155,6 +2158,7 @@ function commitMutationEffectsOnFiber(
   outer: switch (primaryFlags) {
     // 针对该节点以及子节点进行插入操作
     case Placement: {
+      debugger
       /* 
         mount时，依次将根元素到所有叶子元素的所有dom元素  插入到 根容器<div id=“root”></div>
       */
@@ -2170,6 +2174,7 @@ function commitMutationEffectsOnFiber(
     }
     // 插入并更新
     case PlacementAndUpdate: {
+      debugger
       // Placement
       commitPlacement(finishedWork);
       // Clear the "placement" from effect tag so that we know that this is

@@ -816,6 +816,7 @@ function ensureRootIsScheduled(root: FiberRoot, currentTime: number) {
   // 后半部分: 注册调度任务
   // Schedule a new callback.
   let newCallbackNode;
+  debugger
   if (newCallbackPriority === SyncLanePriority) {
     // Special case: Sync React callbacks are scheduled on a special
     // internal queue
@@ -2057,6 +2058,8 @@ function commitRootImpl(root, renderPriorityLevel) {
   // might get scheduled in the commit phase. (See #16714.)
   // TODO: Delete all other places that schedule the passive effect callback
   // They're redundant.
+  // PassiveMask = Passive | ChildDeletion;
+  // 通过schedule调度，发起微任务，执行flushPassiveEffects
   if (
     (finishedWork.subtreeFlags & PassiveMask) !== NoFlags ||
     (finishedWork.flags & PassiveMask) !== NoFlags
@@ -2165,7 +2168,12 @@ function commitRootImpl(root, renderPriorityLevel) {
     // the mutation phase, so that the previous tree is still current during
     // componentWillUnmount, but before the layout phase, so that the finished
     // work is current during componentDidMount/Update.
-    // 将workInProgress树切换为current树
+    // 
+    /* 
+      将workInProgress树切换为current树，
+      之所以选择这个时机，是为了让 classComponent 执行 componentWillUnmount 时，current fiber tree 对应的是旧的fiber tree，
+      当执行componentDidMount/componentDidUpdate 时，current fiber tree 对应的是新的 fiber tree
+    */
     root.current = finishedWork;
 
     // The next phase is the layout phase, where we call effects that read
