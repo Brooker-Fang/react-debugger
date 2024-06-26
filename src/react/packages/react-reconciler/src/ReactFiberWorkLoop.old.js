@@ -19,7 +19,7 @@ import type {Flags} from './ReactFiberFlags';
 import {
   warnAboutDeprecatedLifecycles,
   enableSuspenseServerRenderer,
-  replayFailedUnitOfWorkWithInvokeGuardedCallback,
+  // replayFailedUnitOfWorkWithInvokeGuardedCallback,
   enableProfilerTimer,
   enableProfilerCommitHooks,
   enableProfilerNestedUpdatePhase,
@@ -96,7 +96,7 @@ import {
 
 import {
   createWorkInProgress,
-  assignFiberPropertiesInDEV,
+  // assignFiberPropertiesInDEV,
 } from './ReactFiber.old';
 import {
   NoMode,
@@ -173,7 +173,7 @@ import {
   higherLanePriority,
 } from './ReactFiberLane.old';
 import {requestCurrentTransition, NoTransition} from './ReactFiberTransition';
-import {beginWork as originalBeginWork} from './ReactFiberBeginWork.old';
+import {beginWork} from './ReactFiberBeginWork.old';
 import {completeWork} from './ReactFiberCompleteWork.old';
 import {unwindWork, unwindInterruptedWork} from './ReactFiberUnwindWork.old';
 import {
@@ -226,11 +226,11 @@ import {
   resetCurrentFiber as resetCurrentDebugFiberInDEV,
   setCurrentFiber as setCurrentDebugFiberInDEV,
 } from './ReactCurrentFiber';
-import {
-  invokeGuardedCallback,
-  hasCaughtError,
-  clearCaughtError,
-} from 'shared/ReactErrorUtils';
+// import {
+//   invokeGuardedCallback,
+//   hasCaughtError,
+//   clearCaughtError,
+// } from 'shared/ReactErrorUtils';
 import {onCommitRoot as onCommitRootDevTools} from './ReactFiberDevToolsHook.old';
 import {onCommitRoot as onCommitRootTestSelector} from './ReactTestSelectors';
 
@@ -539,7 +539,7 @@ export function scheduleUpdateOnFiber(
   warnAboutRenderPhaseUpdatesInDEV(fiber);
   // 遍历更新子节点的 优先级，返回FiberRoot
   // 向上收集fiber.childLanes，首次渲染不执行
-  // 从当前fiber到rootFiber的lanes冒泡
+  // 从当前fiber到hostRootFiber的lanes冒泡
   /* 
     markUpdateLaneFromFiberToRoot 只在对比更新阶段才发挥出它的作用, 
     它找出了fiber树中受到本次update影响的所有节点, 
@@ -554,7 +554,6 @@ export function scheduleUpdateOnFiber(
   // Mark that the root has a pending update.
   // 在fiberRoot上标记更新，将update的lane放到fiberRoot.pendingLanes
   markRootUpdated(root, lane, eventTime);
-
   if (enableProfilerTimer && enableProfilerNestedUpdateScheduledHook) {
     if (
       (executionContext & CommitContext) !== NoContext &&
@@ -627,6 +626,7 @@ export function scheduleUpdateOnFiber(
       // 进入render 和 commit 阶段
       performSyncWorkOnRoot(root);
     } else {
+      
       // 更新 or 有正在渲染的任务，则要对新任务 执行调度 
       // 注册调度任务, 经过`Scheduler`包的调度, 间接进行`fiber构造`
       ensureRootIsScheduled(root, eventTime);
@@ -816,7 +816,6 @@ function ensureRootIsScheduled(root: FiberRoot, currentTime: number) {
   // 后半部分: 注册调度任务
   // Schedule a new callback.
   let newCallbackNode;
-  debugger
   if (newCallbackPriority === SyncLanePriority) {
     // Special case: Sync React callbacks are scheduled on a special
     // internal queue
@@ -1106,7 +1105,8 @@ function performSyncWorkOnRoot(root) {
   let lanes;
   let exitStatus;
   console.log('%c进入render阶段====.', 'color: red;');
-  // 首次渲染 workInProgressRoot为null，所以走else逻辑
+  
+  // 判断是否有快过期的任务
   if (
     root === workInProgressRoot &&
     includesSomeLane(root.expiredLanes, workInProgressRootRenderLanes)
@@ -1176,7 +1176,6 @@ function performSyncWorkOnRoot(root) {
   console.red('进入commit 阶段 ======')
   console.log('finishedWork===', finishedWork)
   console.log('fiberRoot===', root)
-  debugger
   commitRoot(root);
 
   // Before exiting, make sure there's a callback scheduled for the next
@@ -1623,6 +1622,7 @@ function renderRootSync(root: FiberRoot, lanes: Lanes) {
       将fiberRoot 赋值给 workInProgressRoot
       创建 current rootFiber 对应的 workInProgress 的rootFiber，并赋值给workInProgress
     */
+   debugger
     prepareFreshStack(root, lanes);
     startWorkOnPendingInteractions(root, lanes);
   }
@@ -1882,7 +1882,6 @@ function completeUnitOfWork(unitOfWork: Fiber): void {
         // Since we're restarting, remove anything that is not a host effect
         // from the effect tag.
         next.flags &= HostEffectMask;
-        debugger
         next.flagsStr = andFlags(next, next.flagsStr, 'HostEffectMask');
         workInProgress = next;
         return;
@@ -1972,7 +1971,6 @@ function commitRootImpl(root, renderPriorityLevel) {
       先执行上一次useEffect的回调函数执行完返回的函数
       在执行本次的useEffect的回调函数 
     */
-   debugger
     flushPassiveEffects();
   } while (rootWithPendingPassiveEffects !== null);
   flushRenderPhaseStrictModeWarningsInDEV();
@@ -2158,7 +2156,6 @@ function commitRootImpl(root, renderPriorityLevel) {
     //   mutation阶段，执行DOM操作
     //   这个阶段负责 DOM 节点的渲染。在渲染过程中，会遍历 effectList，根据 flags 的不同，执行不同的 DOM 操作。
     commitMutationEffects(root, renderPriorityLevel, finishedWork);
-    debugger
     if (shouldFireAfterActiveInstanceBlur) {
       afterActiveInstanceBlur();
     }
@@ -2175,7 +2172,10 @@ function commitRootImpl(root, renderPriorityLevel) {
       当执行componentDidMount/componentDidUpdate 时，current fiber tree 对应的是新的 fiber tree
     */
     root.current = finishedWork;
-
+    console.red('fiberRoot ===')
+    console.info(root)
+    console.info(finishedWork)
+    
     // The next phase is the layout phase, where we call effects that read
     // the host tree after it's been mutated. The idiomatic use case for this is
     // layout, but class component lifecycles also fire here for legacy reasons.
@@ -2950,82 +2950,82 @@ function warnAboutUpdateOnUnmountedFiberInDEV(fiber) {
   }
 }
 
-let beginWork;
-if (__DEV__ && replayFailedUnitOfWorkWithInvokeGuardedCallback) {
-  const dummyFiber = null;
-  beginWork = (current, unitOfWork, lanes) => {
-    // If a component throws an error, we replay it again in a synchronously
-    // dispatched event, so that the debugger will treat it as an uncaught
-    // error See ReactErrorUtils for more information.
+// let beginWork;
+// if (__DEV__ && replayFailedUnitOfWorkWithInvokeGuardedCallback) {
+//   const dummyFiber = null;
+//   beginWork = (current, unitOfWork, lanes) => {
+//     // If a component throws an error, we replay it again in a synchronously
+//     // dispatched event, so that the debugger will treat it as an uncaught
+//     // error See ReactErrorUtils for more information.
 
-    // Before entering the begin phase, copy the work-in-progress onto a dummy
-    // fiber. If beginWork throws, we'll use this to reset the state.
-    const originalWorkInProgressCopy = assignFiberPropertiesInDEV(
-      dummyFiber,
-      unitOfWork,
-    );
-    try {
-      return originalBeginWork(current, unitOfWork, lanes);
-    } catch (originalError) {
-      if (
-        originalError !== null &&
-        typeof originalError === 'object' &&
-        typeof originalError.then === 'function'
-      ) {
-        // Don't replay promises. Treat everything else like an error.
-        throw originalError;
-      }
+//     // Before entering the begin phase, copy the work-in-progress onto a dummy
+//     // fiber. If beginWork throws, we'll use this to reset the state.
+//     const originalWorkInProgressCopy = assignFiberPropertiesInDEV(
+//       dummyFiber,
+//       unitOfWork,
+//     );
+//     try {
+//       return originalBeginWork(current, unitOfWork, lanes);
+//     } catch (originalError) {
+//       if (
+//         originalError !== null &&
+//         typeof originalError === 'object' &&
+//         typeof originalError.then === 'function'
+//       ) {
+//         // Don't replay promises. Treat everything else like an error.
+//         throw originalError;
+//       }
 
-      // Keep this code in sync with handleError; any changes here must have
-      // corresponding changes there.
-      resetContextDependencies();
-      resetHooksAfterThrow();
-      // Don't reset current debug fiber, since we're about to work on the
-      // same fiber again.
+//       // Keep this code in sync with handleError; any changes here must have
+//       // corresponding changes there.
+//       resetContextDependencies();
+//       resetHooksAfterThrow();
+//       // Don't reset current debug fiber, since we're about to work on the
+//       // same fiber again.
 
-      // Unwind the failed stack frame
-      unwindInterruptedWork(unitOfWork, workInProgressRootRenderLanes);
+//       // Unwind the failed stack frame
+//       unwindInterruptedWork(unitOfWork, workInProgressRootRenderLanes);
 
-      // Restore the original properties of the fiber.
-      assignFiberPropertiesInDEV(unitOfWork, originalWorkInProgressCopy);
+//       // Restore the original properties of the fiber.
+//       assignFiberPropertiesInDEV(unitOfWork, originalWorkInProgressCopy);
 
-      if (enableProfilerTimer && unitOfWork.mode & ProfileMode) {
-        // Reset the profiler timer.
-        startProfilerTimer(unitOfWork);
-      }
+//       if (enableProfilerTimer && unitOfWork.mode & ProfileMode) {
+//         // Reset the profiler timer.
+//         startProfilerTimer(unitOfWork);
+//       }
 
-      // Run beginWork again.
-      invokeGuardedCallback(
-        null,
-        originalBeginWork,
-        null,
-        current,
-        unitOfWork,
-        lanes,
-      );
+//       // Run beginWork again.
+//       invokeGuardedCallback(
+//         null,
+//         originalBeginWork,
+//         null,
+//         current,
+//         unitOfWork,
+//         lanes,
+//       );
 
-      if (hasCaughtError()) {
-        const replayError = clearCaughtError();
-        if (
-          typeof replayError === 'object' &&
-          replayError !== null &&
-          replayError._suppressLogging &&
-          typeof originalError === 'object' &&
-          originalError !== null &&
-          !originalError._suppressLogging
-        ) {
-          // If suppressed, let the flag carry over to the original error which is the one we'll rethrow.
-          originalError._suppressLogging = true;
-        }
-      }
-      // We always throw the original error in case the second render pass is not idempotent.
-      // This can happen if a memoized function or CommonJS module doesn't throw after first invokation.
-      throw originalError;
-    }
-  };
-} else {
-  beginWork = originalBeginWork;
-}
+//       if (hasCaughtError()) {
+//         const replayError = clearCaughtError();
+//         if (
+//           typeof replayError === 'object' &&
+//           replayError !== null &&
+//           replayError._suppressLogging &&
+//           typeof originalError === 'object' &&
+//           originalError !== null &&
+//           !originalError._suppressLogging
+//         ) {
+//           // If suppressed, let the flag carry over to the original error which is the one we'll rethrow.
+//           originalError._suppressLogging = true;
+//         }
+//       }
+//       // We always throw the original error in case the second render pass is not idempotent.
+//       // This can happen if a memoized function or CommonJS module doesn't throw after first invokation.
+//       throw originalError;
+//     }
+//   };
+// } else {
+//   beginWork = originalBeginWork;
+// }
 
 let didWarnAboutUpdateInRender = false;
 let didWarnAboutUpdateInRenderForAnotherComponent;

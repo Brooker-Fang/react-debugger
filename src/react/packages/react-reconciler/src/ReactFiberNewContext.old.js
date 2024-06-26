@@ -237,6 +237,7 @@ function propagateContextChange_eager<T>(
     // Set the return pointer of the child to the work-in-progress fiber.
     fiber.return = workInProgress;
   }
+  // 深度优先遍历
   while (fiber !== null) {
     let nextFiber;
 
@@ -246,8 +247,10 @@ function propagateContextChange_eager<T>(
       nextFiber = fiber.child;
 
       let dependency = list.firstContext;
+      // 如果有context 消费，遍历 context 单链表，找到批评的context，然后标记 fiber 的lanes
       while (dependency !== null) {
         // Check if the context matches.
+        // 找到匹配的context
         if (
           dependency.context === context &&
           (dependency.observedBits & changedBits) !== 0
@@ -286,9 +289,11 @@ function propagateContextChange_eager<T>(
           if (alternate !== null) {
             alternate.lanes = mergeLanes(alternate.lanes, renderLanes);
           }
+          // 更新所有祖先的 childLanes
           scheduleWorkOnParentPath(fiber.return, renderLanes);
 
           // Mark the updated lanes on the list, too.
+          // 同样要修改 dependencies 的lanes
           list.lanes = mergeLanes(list.lanes, renderLanes);
 
           // Since we already found a match, we can stop traversing the
@@ -620,7 +625,8 @@ export function checkIfContextChanged(currentDependencies: Dependencies) {
   }
   return false;
 }
-
+// 函数组件、类组件、Comsumer组件 
+// 初始化下 dependencies 这个属性，类似 renderWithHooks
 export function prepareToReadContext(
   workInProgress: Fiber,
   renderLanes: Lanes,

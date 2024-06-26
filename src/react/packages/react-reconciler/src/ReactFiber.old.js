@@ -134,7 +134,7 @@ function FiberNode(
   this.memoizedProps = null; // 上一次生成子节点时用到的属性
   this.updateQueue = null; //  存储update更新对象的队列, 
   this.memoizedState = null; // 上一次生成fiber时的state状态
-  this.dependencies = null; // 该 fiber 节点所依赖的(contexts, events)等
+  this.dependencies = null; // 该 fiber 节点所依赖的(contexts, events)等，单链表
 
   this.mode = mode;
 
@@ -247,6 +247,7 @@ export function resolveLazyComponentTag(Component: Function): WorkTag {
 // 初始渲染时 pendingProps = null
 export function createWorkInProgress(current: Fiber, pendingProps: any): Fiber {
   let workInProgress = current.alternate;
+  // 首次渲染
   if (workInProgress === null) {
     // We use a double buffering pooling technique because we know that we'll
     // only ever need at most two versions of a tree. We pool the "other" unused
@@ -276,6 +277,7 @@ export function createWorkInProgress(current: Fiber, pendingProps: any): Fiber {
     // 互相引用
     current.alternate = workInProgress;
   } else {
+    // 更新时
     workInProgress.pendingProps = pendingProps;
     // Needed because Blocks store data on type.
     workInProgress.type = current.type;

@@ -1001,11 +1001,13 @@ function updateClassComponent(
     hasContext = false;
   }
   prepareToReadContext(workInProgress, renderLanes);
-
+  debugger
   const instance = workInProgress.stateNode;
   let shouldUpdate;
   if (instance === null) {
+    // TODO: 这个是什么场景会触发？
     if (current !== null) {
+      // 没有实例的类组件只有在处于不一致状态的非并发树中挂起时才会挂载
       // A class component without an instance only mounts if it suspended
       // inside a non-concurrent tree, in an inconsistent state. We want to
       // treat it like a new mount, even though an empty version of it already
@@ -1662,6 +1664,7 @@ function mountIndeterminateComponent(
     );
   } else {
     // Proceed under the assumption that this is a function component
+    // FC 组件
     workInProgress.tag = FunctionComponent;
     if (__DEV__) {
       if (disableLegacyContext && Component.contextTypes) {
@@ -3305,6 +3308,7 @@ function beginWork(
     mount 阶段，第一个执行beginWork的fiber是rootFiber，也只有rootFiber的currentFiber不是null
   */
   if (current !== null) {
+    debugger
     // current !== null 说明是更新 update
     // TODO: The factoring of this block is weird.
     if (
@@ -3335,6 +3339,7 @@ function beginWork(
       // This fiber does not have any pending work. Bailout without entering
       // the begin phase. There's still some bookkeeping we that needs to be done
       // in this optimized path, mostly pushing stuff onto the stack.
+      // 除了一些特殊组件如 OffscreenComponent、 Suspense，其他主要是处理 context 相关逻辑
       switch (workInProgress.tag) {
         case HostRoot:
           pushHostRootContext(workInProgress);

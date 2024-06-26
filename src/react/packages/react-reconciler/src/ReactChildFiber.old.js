@@ -265,6 +265,7 @@ function resolveLazy(lazyType) {
     对于初始渲染来说,只有根组件需要添加,其他元素不需要添加,防止过多的DOM操作
 */
 function ChildReconciler(shouldTrackSideEffects) {
+  // 标记删除，并收集到 父节点的 deletions属性
   function deleteChild(returnFiber: Fiber, childToDelete: Fiber): void {
     if (!shouldTrackSideEffects) {
       // Noop.
@@ -279,7 +280,7 @@ function ChildReconciler(shouldTrackSideEffects) {
       deletions.push(childToDelete);
     }
   }
-
+  // 对所有子节点 标记删除，并收集到 父节点的 deletions属性
   function deleteRemainingChildren(
     returnFiber: Fiber,
     currentFirstChild: Fiber | null,
@@ -1119,6 +1120,7 @@ function ChildReconciler(shouldTrackSideEffects) {
     while (child !== null) {
       // TODO: If key === null and child.key === null, then this only applies to
       // the first item in the list.
+      // 判断key 是否相同
       if (child.key === key) {
         const elementType = element.type;
         if (elementType === REACT_FRAGMENT_TYPE) {
@@ -1133,6 +1135,7 @@ function ChildReconciler(shouldTrackSideEffects) {
             return existing;
           }
         } else {
+          // 通过对比 elementType 和 其他条件判断能否复用旧的 fiber
           if (
             child.elementType === elementType ||
             // Keep this check inline so it only runs on the false path:
@@ -1160,15 +1163,17 @@ function ChildReconciler(shouldTrackSideEffects) {
             return existing;
           }
         }
+        // key 相同 type 不同，把fiber及和兄弟fiber标记删除
         // Didn't match.
         deleteRemainingChildren(returnFiber, child);
         break;
       } else {
+        // key不同直接标记删除该节点，对该fiber 标记ChildDeletion，并将该节点收集到 父节点的 deletions属性
         deleteChild(returnFiber, child);
       }
       child = child.sibling;
     }
-
+    // 新建fiber
     if (element.type === REACT_FRAGMENT_TYPE) {
       const created = createFiberFromFragment(
         element.props.children,
@@ -1179,7 +1184,6 @@ function ChildReconciler(shouldTrackSideEffects) {
       created.return = returnFiber;
       return created;
     } else {
-      // 首次渲染走这个
       // 根据ReactElement 即vnode 创建Fiber对象，并返回
       const created = createFiberFromElement(element, returnFiber.mode, lanes);
       created.ref = coerceRef(returnFiber, currentFirstChild, element);
@@ -1396,7 +1400,7 @@ export function cloneChildFibers(
   let currentChild = workInProgress.child;
   let newChild = createWorkInProgress(currentChild, currentChild.pendingProps);
   workInProgress.child = newChild;
-
+  console.info('cloneChildFibers==', workInProgress.child === newChild)
   newChild.return = workInProgress;
   while (currentChild.sibling !== null) {
     currentChild = currentChild.sibling;

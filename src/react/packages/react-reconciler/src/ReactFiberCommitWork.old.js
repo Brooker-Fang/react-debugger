@@ -2031,7 +2031,6 @@ function commitMutationEffects_begin(
   root: FiberRoot,
   renderPriorityLevel: LanePriority,
 ) {
-  debugger
   /* 
     向下遍历直到 满足一下条件:
       当前fiber不存在子fiber
@@ -2158,7 +2157,6 @@ function commitMutationEffectsOnFiber(
   outer: switch (primaryFlags) {
     // 针对该节点以及子节点进行插入操作
     case Placement: {
-      debugger
       /* 
         mount时，依次将根元素到所有叶子元素的所有dom元素  插入到 根容器<div id=“root”></div>
       */

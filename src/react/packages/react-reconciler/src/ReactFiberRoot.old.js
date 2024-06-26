@@ -41,9 +41,9 @@ function FiberRootNode(containerInfo, tag, hydrate) {
   this.callbackNode = null; // 存储 正在调度的任务
   this.callbackPriority = NoLanePriority; // 存储 正在调度的任务的优先级
   this.eventTimes = createLaneMap(NoLanes);
-  this.expirationTimes = createLaneMap(NoTimestamp);
+  this.expirationTimes = createLaneMap(NoTimestamp); // 记录过期时间，初始值都是 -1 
 
-  this.pendingLanes = NoLanes;
+  this.pendingLanes = NoLanes; // 待处理的更新
   this.suspendedLanes = NoLanes;
   this.pingedLanes = NoLanes;
   this.expiredLanes = NoLanes;

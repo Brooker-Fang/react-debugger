@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useLayoutEffect } from 'react'
 import { React, Component, useState } from './CONST'
 const testhook = () => {
   // eslint-disable-next-line react-hooks/rules-of-hooks
@@ -29,6 +29,27 @@ class ClassComponent extends Component {
 }
 
 function FunctionComponent({ name }) {
+  // useEffect(() => {
+  //   debugger
+  //   return () => {
+  //     debugger
+  //   }
+  // }, [])
+  // useLayoutEffect(() => {
+  //   debugger
+  //   return () => {
+  //     debugger
+  //   }
+  // }, [])
+  // const [state, setState] = useState('hello world')
+
+  // useLayoutEffect(() => {
+  //   let i = 0
+  //   while (i <= 100000000) {
+  //     i++
+  //   }
+  //   setState('world hello')
+  // }, [])
   return <div className="function border">{name}</div>
 }
 // const App = () => {

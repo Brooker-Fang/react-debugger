@@ -516,7 +516,7 @@ function computeExpirationTime(lane: Lane, currentTime: number) {
     return NoTimestamp;
   }
 }
-
+// 检查是否有任何lanes 被其他 work 饿死，如果有，则将他们标记为过期，作为一下个要处理的 lanes
 export function markStarvedLanesAsExpired(
   root: FiberRoot,
   currentTime: number,
@@ -660,7 +660,7 @@ export function pickArbitraryLane(lanes: Lanes): Lane {
   // getHighestPriorityLane because it requires the fewest operations.
   return getHighestPriorityLane(lanes);
 }
-
+// 获取一个lanes上优先级最高的lane，如果这里返回值为 index，那么 1 << index 就是lanes 中优先级最高的 lane
 function pickArbitraryLaneIndex(lanes: Lanes) {
   return 31 - clz32(lanes);
 }
