@@ -782,7 +782,14 @@ function ChildReconciler(shouldTrackSideEffects) {
     let lastPlacedIndex = 0;
     let newIdx = 0;
     let nextOldFiber = null;
-    // 初始渲染不执行
+    /* 
+        进入 Diff 逻辑
+    */
+    /*  
+      第一次遍历处理节点的更新：
+        从左往右遍历，比较新老节点，如果节点可以复用，则继续网友，否则就停止
+    
+    */
     for (; oldFiber !== null && newIdx < newChildren.length; newIdx++) {
       if (oldFiber.index > newIdx) {
         nextOldFiber = oldFiber;
@@ -827,12 +834,13 @@ function ChildReconciler(shouldTrackSideEffects) {
       previousNewFiber = newFiber;
       oldFiber = nextOldFiber;
     }
-    // 初始渲染不执行
+    // 新节点遍历完了，老节点还有，则对剩下的老节点标记删除
     if (newIdx === newChildren.length) {
       // We've reached the end of the new children. We can delete the rest.
       deleteRemainingChildren(returnFiber, oldFiber);
       return resultingFirstChild;
     }
+    // 如果是新节点还有，老节点遍历完了，则对剩下的新节点创建对应的fiber节点，并标记标记新增
     // oldFiber === null 为初始渲染
     if (oldFiber === null) {
       // If we don't have any more existing children we can choose a fast path
@@ -857,6 +865,7 @@ function ChildReconciler(shouldTrackSideEffects) {
       return resultingFirstChild;
     }
 
+    // 新老节点都还有没遍历完的节点，把老节点都 加入map，提高查找的效率
     // Add all children to a key map for quick lookups.
     const existingChildren = mapRemainingChildren(returnFiber, oldFiber);
 
@@ -891,6 +900,7 @@ function ChildReconciler(shouldTrackSideEffects) {
       }
     }
 
+    // 更新阶段。此时新节点已经遍历完了，能复用的老节点都用完了，则最后查找map是否还有元素，如果有，则都是新节点不能复用的元素，要标记删除
     if (shouldTrackSideEffects) {
       // Any existing children that weren't consumed above were deleted. We need
       // to add them to the deletion list.
@@ -1152,6 +1162,7 @@ function ChildReconciler(shouldTrackSideEffects) {
               elementType.$$typeof === REACT_LAZY_TYPE &&
               resolveLazy(elementType) === child.type)
           ) {
+            // 可以复用，把兄弟节点都标记删除
             deleteRemainingChildren(returnFiber, child.sibling);
             const existing = useFiber(child, element.props);
             existing.ref = coerceRef(returnFiber, child, element);
@@ -1163,7 +1174,7 @@ function ChildReconciler(shouldTrackSideEffects) {
             return existing;
           }
         }
-        // key 相同 type 不同，把fiber及和兄弟fiber标记删除
+        // key 相同 type 不同，把当前fiber和兄弟fiber标记删除
         // Didn't match.
         deleteRemainingChildren(returnFiber, child);
         break;
@@ -1400,7 +1411,7 @@ export function cloneChildFibers(
   let currentChild = workInProgress.child;
   let newChild = createWorkInProgress(currentChild, currentChild.pendingProps);
   workInProgress.child = newChild;
-  console.info('cloneChildFibers==', workInProgress.child === newChild)
+  
   newChild.return = workInProgress;
   while (currentChild.sibling !== null) {
     currentChild = currentChild.sibling;

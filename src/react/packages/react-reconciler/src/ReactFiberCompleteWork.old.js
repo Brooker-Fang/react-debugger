@@ -246,6 +246,7 @@ if (supportsMutation) {
   updateHostContainer = function(current: null | Fiber, workInProgress: Fiber) {
     // Noop
   };
+  // 更新时
   updateHostComponent = function(
     current: Fiber,
     workInProgress: Fiber,
@@ -271,6 +272,7 @@ if (supportsMutation) {
     // TODO: Experiencing an error where oldProps is null. Suggests a host
     // component is hitting the resume path. Figure out why. Possibly
     // related to `hidden`.
+    // 执行 diffProperties, 对比新旧 props，返回需要更新的属性 的数组对象
     const updatePayload = prepareUpdate(
       instance,
       type,
@@ -810,6 +812,9 @@ function completeWork(
 ): Fiber | null {
   const newProps = workInProgress.pendingProps;
   // 匹配当前Fiber的类型，只有几个需要创建对应的DOM对象
+  if (current!== null) {
+    debugger
+  }
   switch (workInProgress.tag) {
     // 这些组件 不能创建dom对象
     case IndeterminateComponent:

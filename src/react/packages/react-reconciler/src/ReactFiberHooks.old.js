@@ -347,7 +347,7 @@ function areHookInputsEqual(
   }
   return true;
 }
-// beginWork时 函数组件执行的函数
+// beginWork时 函数组件执行的函数, 返回函数组件的执行结果的 ReactElement 对象
 export function renderWithHooks<Props, SecondArg>(
   current: Fiber | null,
   workInProgress: Fiber,

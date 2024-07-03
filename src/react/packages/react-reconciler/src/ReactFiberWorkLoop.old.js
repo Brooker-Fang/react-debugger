@@ -552,7 +552,7 @@ export function scheduleUpdateOnFiber(
   }
 
   // Mark that the root has a pending update.
-  // 在fiberRoot上标记更新，将update的lane放到fiberRoot.pendingLanes
+  // 在fiberRoot上标记更新，将update的lane 合并到 fiberRoot.pendingLanes
   markRootUpdated(root, lane, eventTime);
   if (enableProfilerTimer && enableProfilerNestedUpdateScheduledHook) {
     if (
@@ -1622,7 +1622,7 @@ function renderRootSync(root: FiberRoot, lanes: Lanes) {
       将fiberRoot 赋值给 workInProgressRoot
       创建 current rootFiber 对应的 workInProgress 的rootFiber，并赋值给workInProgress
     */
-   debugger
+   console.info('workInProgressRoot !== root || workInProgressRootRenderLanes !== lanes==', workInProgressRoot !== root || workInProgressRootRenderLanes !== lanes)
     prepareFreshStack(root, lanes);
     startWorkOnPendingInteractions(root, lanes);
   }
@@ -1810,6 +1810,7 @@ function performUnitOfWork(unitOfWork: Fiber): void {
        1、创建或标记元素更新
        2、flags冒泡
     */
+  //  如果找到 兄弟节点，会将兄弟节点赋值给 workInProgress，会退出 performUnitOfWork 方法，并继续执行 workLoop，即对返回的兄弟节点 继续执行 performUnitOfWork
     completeUnitOfWork(unitOfWork);
   } else {
     workInProgress = next;

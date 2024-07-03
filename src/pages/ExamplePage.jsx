@@ -80,9 +80,9 @@ function FunctionComponent({ name }) {
 // }
 const App = () => {
   return (
-    <div className="box border">
-      <p>text</p>
+    <div className="app class">
       <FunctionComponent name="哇哈哈"></FunctionComponent>
+      <p>text</p>
       <ClassComponent name="哇哈哈"></ClassComponent>
     </div>
   )

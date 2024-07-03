@@ -1001,7 +1001,6 @@ function updateClassComponent(
     hasContext = false;
   }
   prepareToReadContext(workInProgress, renderLanes);
-  debugger
   const instance = workInProgress.stateNode;
   let shouldUpdate;
   if (instance === null) {
@@ -3308,7 +3307,7 @@ function beginWork(
     mount 阶段，第一个执行beginWork的fiber是rootFiber，也只有rootFiber的currentFiber不是null
   */
   if (current !== null) {
-    debugger
+    
     // current !== null 说明是更新 update
     // TODO: The factoring of this block is weird.
     if (
@@ -3550,6 +3549,7 @@ function beginWork(
         }
       }
       // 当前fiber节点无需更新, 调用bailoutOnAlreadyFinishedWork循环检测子节点是否需要更新
+      // 返回 null 则说明子节点也无需更新
       return bailoutOnAlreadyFinishedWork(current, workInProgress, renderLanes);
     } else {
       if ((current.flags & ForceUpdateForLegacySuspense) !== NoFlags) {
