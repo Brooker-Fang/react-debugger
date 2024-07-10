@@ -1257,6 +1257,7 @@ function updateHostRoot(current, workInProgress, renderLanes) {
       // inserted into the React tree here. It just happens to not need DOM
       // mutations because it already exists.
       node.flags = (node.flags & ~Placement) | Hydrating;
+      node.flagsStr = removeFlags(node, node.flagsStr, 'Placement')
       node = node.sibling;
     }
   } else {
