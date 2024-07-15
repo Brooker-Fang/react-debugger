@@ -1286,7 +1286,7 @@ function updateHostComponent(
 
   let nextChildren = nextProps.children;
   const isDirectTextChild = shouldSetTextContent(type, nextProps);
-
+  debugger
   if (isDirectTextChild) {
     // We special case a direct text child of a host node. This is a common
     // case. We won't handle it as a reified child. We will instead handle
@@ -3307,7 +3307,7 @@ function beginWork(
     mount 阶段，第一个执行beginWork的fiber是rootFiber，也只有rootFiber的currentFiber不是null
   */
   if (current !== null) {
-    
+    debugger
     // current !== null 说明是更新 update
     // TODO: The factoring of this block is weird.
     if (
@@ -3549,7 +3549,8 @@ function beginWork(
         }
       }
       // 当前fiber节点无需更新, 调用bailoutOnAlreadyFinishedWork循环检测子节点是否需要更新
-      // 返回 null 则说明子节点也无需更新
+      // 如果有子节点需要更新的会执行cloneChildFibers 克隆子节点，然后返回第一个子节点，即 workInProgress.child
+      // 返回 null 则说明子节点也无需更新, 退出beginWork 逻辑
       return bailoutOnAlreadyFinishedWork(current, workInProgress, renderLanes);
     } else {
       if ((current.flags & ForceUpdateForLegacySuspense) !== NoFlags) {

@@ -28,29 +28,14 @@ class ClassComponent extends Component {
   }
 }
 
-function FunctionComponent({ name }) {
-  // useEffect(() => {
-  //   debugger
-  //   return () => {
-  //     debugger
-  //   }
-  // }, [])
-  // useLayoutEffect(() => {
-  //   debugger
-  //   return () => {
-  //     debugger
-  //   }
-  // }, [])
-  // const [state, setState] = useState('hello world')
-
-  // useLayoutEffect(() => {
-  //   let i = 0
-  //   while (i <= 100000000) {
-  //     i++
-  //   }
-  //   setState('world hello')
-  // }, [])
-  return <div className="function border">{name}</div>
+function FunctionComponent() {
+  const [count, setCount] = useState(0)
+  const addCount = () => setCount((prev) => prev + 1)
+  return (
+    <div className="function border" onClick={addCount}>
+      {count}
+    </div>
+  )
 }
 // const App = () => {
 //   const [show, setShow] = useState(true)

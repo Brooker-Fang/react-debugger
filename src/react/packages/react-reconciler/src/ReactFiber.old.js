@@ -247,7 +247,7 @@ export function resolveLazyComponentTag(Component: Function): WorkTag {
 // 初始渲染时 pendingProps = null
 export function createWorkInProgress(current: Fiber, pendingProps: any): Fiber {
   let workInProgress = current.alternate;
-  // 首次渲染
+  // 首次渲染 或 首次更新
   if (workInProgress === null) {
     // We use a double buffering pooling technique because we know that we'll
     // only ever need at most two versions of a tree. We pool the "other" unused

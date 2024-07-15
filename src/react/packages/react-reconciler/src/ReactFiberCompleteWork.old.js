@@ -813,7 +813,7 @@ function completeWork(
   const newProps = workInProgress.pendingProps;
   // 匹配当前Fiber的类型，只有几个需要创建对应的DOM对象
   if (current!== null) {
-    debugger
+    // debugger
   }
   switch (workInProgress.tag) {
     // 这些组件 不能创建dom对象
