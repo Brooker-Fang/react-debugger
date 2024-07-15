@@ -787,8 +787,9 @@ function ChildReconciler(shouldTrackSideEffects) {
     */
     /*  
       第一次遍历处理节点的更新：
-        从左往右遍历，比较新老节点，如果节点可以复用，则继续网友，否则就停止
-    
+        从左往右遍历，比较新老节点，如果节点可以复用，则继续往右遍历，否则就停止
+        1 2 3 4 5 6 7
+        1 2 5 4 8 9
     */
     for (; oldFiber !== null && newIdx < newChildren.length; newIdx++) {
       if (oldFiber.index > newIdx) {
@@ -797,12 +798,15 @@ function ChildReconciler(shouldTrackSideEffects) {
       } else {
         nextOldFiber = oldFiber.sibling;
       }
+      // Update the fiber if the keys match, otherwise return null.
+      // 如果key 能匹配上，则更新fiber，不能则返回null
       const newFiber = updateSlot(
         returnFiber,
         oldFiber,
         newChildren[newIdx],
         lanes,
       );
+      // 不能复用
       if (newFiber === null) {
         // TODO: This breaks on empty slots like null children. That's
         // unfortunate because it triggers the slow path all the time. We need
@@ -820,6 +824,7 @@ function ChildReconciler(shouldTrackSideEffects) {
           deleteChild(returnFiber, oldFiber);
         }
       }
+      // 判断 newFiber的位置有没有发生变化，如果变化则标记 Placement，没有变化则不需要标记
       lastPlacedIndex = placeChild(newFiber, lastPlacedIndex, newIdx);
       if (previousNewFiber === null) {
         // TODO: Move out of the loop. This only happens for the first run.
@@ -871,6 +876,7 @@ function ChildReconciler(shouldTrackSideEffects) {
 
     // Keep scanning and use the map to restore deleted items as moves.
     for (; newIdx < newChildren.length; newIdx++) {
+      // 如果新节点 能在 map里面找到匹配的，则复用fiber，否则返回null
       const newFiber = updateFromMap(
         existingChildren,
         returnFiber,
@@ -878,6 +884,7 @@ function ChildReconciler(shouldTrackSideEffects) {
         newChildren[newIdx],
         lanes,
       );
+      // 能找到匹配的fiber
       if (newFiber !== null) {
         if (shouldTrackSideEffects) {
           if (newFiber.alternate !== null) {

@@ -54,7 +54,7 @@ export const addFlagsToString = (fiber: Fiber | FiberRoot, flags: string, ...arg
 }
 
 const addFlags = (fiber: Fiber | FiberRoot, flags: string, ...args: string[]) => {
-  traceFlags(fiber)
+  traceFlags(fiber, args && args[0])
   if (args?.length && args.every(val => !!val)) {
     const formatVal = formatArg(...args).reduce((prev, val) => !!val ? `${prev} ${val} |` : prev, flags).trim()
     traceFlags(fiber, formatVal)

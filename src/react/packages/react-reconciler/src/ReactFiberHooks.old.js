@@ -541,6 +541,8 @@ export function bailoutHooks(
     );
   } else {
     workInProgress.flags &= ~(PassiveEffect | UpdateEffect);
+    workInProgress.flagsStr = removeFlags(workInProgress, workInProgress.flagsStr, 'Update')
+    workInProgress.flagsStr = removeFlags(workInProgress, workInProgress.flagsStr, 'Passive')
   }
   current.lanes = removeLanes(current.lanes, lanes);
 }
