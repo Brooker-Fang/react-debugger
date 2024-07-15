@@ -824,7 +824,7 @@ function ChildReconciler(shouldTrackSideEffects) {
           deleteChild(returnFiber, oldFiber);
         }
       }
-      // 给新增的fiber 标记 Placement
+      // 判断 newFiber的位置有没有发生变化，如果变化则标记 Placement，没有变化则不需要标记
       lastPlacedIndex = placeChild(newFiber, lastPlacedIndex, newIdx);
       if (previousNewFiber === null) {
         // TODO: Move out of the loop. This only happens for the first run.
@@ -876,6 +876,7 @@ function ChildReconciler(shouldTrackSideEffects) {
 
     // Keep scanning and use the map to restore deleted items as moves.
     for (; newIdx < newChildren.length; newIdx++) {
+      // 如果新节点 能在 map里面找到匹配的，则复用fiber，否则返回null
       const newFiber = updateFromMap(
         existingChildren,
         returnFiber,
@@ -883,6 +884,7 @@ function ChildReconciler(shouldTrackSideEffects) {
         newChildren[newIdx],
         lanes,
       );
+      // 能找到匹配的fiber
       if (newFiber !== null) {
         if (shouldTrackSideEffects) {
           if (newFiber.alternate !== null) {
