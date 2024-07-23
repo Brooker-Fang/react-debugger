@@ -760,6 +760,7 @@ export function isInterleavedUpdate(fiber: Fiber, lane: Lane) {
 */
 function ensureRootIsScheduled(root: FiberRoot, currentTime: number) {
   // 前半部分: 判断是否需要注册新的调度
+  // 当前 render 阶段正在进行的任务
   const existingCallbackNode = root.callbackNode;
 
   // Check if any lanes are being starved by other work. If so, mark them as
@@ -777,6 +778,7 @@ function ensureRootIsScheduled(root: FiberRoot, currentTime: number) {
   const newCallbackPriority = returnNextLanesPriority();
 
   if (nextLanes === NoLanes) {
+    // nextLanes为空了则表示没有任务了，就算这个任务执行了但是也做不了任何更新，所以需要取消掉
     // Special case: There's nothing to work on.
     if (existingCallbackNode !== null) {
       cancelCallback(existingCallbackNode);
@@ -787,6 +789,7 @@ function ensureRootIsScheduled(root: FiberRoot, currentTime: number) {
   }
 
   // Check if there's an existing task. We may be able to reuse it.
+  // 当前 render 阶段正在进行的任务优先级
   const existingCallbackPriority = root.callbackPriority;
   // 节流：新旧更新的优先级相同, 如连续多次执行setState), 则无需注册新task(继续沿用上一个优先级相同的task), 直接退出调用
   if (existingCallbackPriority === newCallbackPriority) {
@@ -824,7 +827,7 @@ function ensureRootIsScheduled(root: FiberRoot, currentTime: number) {
     scheduleSyncCallback(performSyncWorkOnRoot.bind(null, root));
     newCallbackNode = null;
   } else if (newCallbackPriority === SyncBatchedLanePriority) {
-    
+    // 同步模式到concurrent模式的过渡模式：blocking模式会走这里
     newCallbackNode = scheduleCallback(
       ImmediateSchedulerPriority,
       performSyncWorkOnRoot.bind(null, root),
@@ -836,6 +839,7 @@ function ensureRootIsScheduled(root: FiberRoot, currentTime: number) {
     scheduleMicrotask(performSyncWorkOnRoot.bind(null, root));
     newCallbackNode = null;
   } else {
+    // concurrent模式的渲染会走这里
     // 转成schedule的优先级
     const schedulerPriorityLevel = lanePriorityToSchedulerPriority(
       newCallbackPriority,
@@ -845,7 +849,7 @@ function ensureRootIsScheduled(root: FiberRoot, currentTime: number) {
       performConcurrentWorkOnRoot.bind(null, root),
     );
   }
-  // 在rootFiber上标记
+  // 更新root上的任务优先级和任务，以便下次发起调度时候可以获取到
   root.callbackPriority = newCallbackPriority;
   root.callbackNode = newCallbackNode;
 }
