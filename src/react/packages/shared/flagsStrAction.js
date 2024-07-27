@@ -75,7 +75,7 @@ export const addSubtreeFlags = (fiber: Fiber | FiberRoot, flags: string, ...args
 
 export const removeFlags = (fiber: Fiber | FiberRoot, flags: string, remove_flags: string) => {
   traceFlags(fiber, flags.replace(`${remove_flags} |`, ''))
-  return flags.replace(`${remove_flags} |`, '')
+  return flags.replaceAll(`${remove_flags} |`, '')
 }
 
 export const andFlags = (fiber: Fiber | FiberRoot, flags: string, ...args: string[]) => {
