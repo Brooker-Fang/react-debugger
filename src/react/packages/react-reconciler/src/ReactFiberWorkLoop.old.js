@@ -954,7 +954,7 @@ function performConcurrentWorkOnRoot(root, didTimeout) {
   }
   // 退出前再次检测, 是否还有其他更新, 是否需要发起新调度
   ensureRootIsScheduled(root, now());
-  // 渲染被阻断, 返回一个新的performConcurrentWorkOnRoot函数, 等待下一次调用
+  // 任务被中断了, 返回一个新的performConcurrentWorkOnRoot函数, 等待下一次调用
   if (root.callbackNode === originalCallbackNode) {
     // The task node scheduled for this root is the same one that's
     // currently executed. Need to return a continuation.
@@ -1618,9 +1618,11 @@ function renderRootSync(root: FiberRoot, lanes: Lanes) {
   // 判断条件为true 说明是 首次渲染 || 发生了任务的打断，
   if (workInProgressRoot !== root || workInProgressRootRenderLanes !== lanes) {
     /* 
-      为FiberRoot 添加|重置 finishedWork和finishedLanes 属性
-      将fiberRoot 赋值给 workInProgressRoot
-      创建 current rootFiber 对应的 workInProgress 的rootFiber，并赋值给workInProgress
+      如果是首次渲染，则是初始化数据：
+        为FiberRoot 添加|重置 finishedWork和finishedLanes 属性
+        将fiberRoot 赋值给 workInProgressRoot
+        创建 current rootFiber 对应的 workInProgress 的rootFiber，并赋值给workInProgress
+      如果发生了 高优先级任务 打断 低优先任务，会将将Fiber树还原
     */
    console.info('workInProgressRoot !== root || workInProgressRootRenderLanes !== lanes==', workInProgressRoot !== root || workInProgressRootRenderLanes !== lanes)
     prepareFreshStack(root, lanes);
@@ -1701,8 +1703,13 @@ function renderRootConcurrent(root: FiberRoot, lanes: Lanes) {
 
   // If the root or lanes have changed, throw out the existing stack
   // and prepare a fresh one. Otherwise we'll continue where we left off.
+  // 首次渲染 || 发生了任务的打断，即高优先级任务 打断 低优先任务
   if (workInProgressRoot !== root || workInProgressRootRenderLanes !== lanes) {
     resetRenderTimer();
+    /* 
+      如果是首次渲染，则是初始化数据
+      如果发生了 高优先级任务 打断 低优先任务，会将将Fiber树还原
+    */
     prepareFreshStack(root, lanes);
     startWorkOnPendingInteractions(root, lanes);
   }

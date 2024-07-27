@@ -573,6 +573,8 @@ const performWorkUntilDeadline = () => {
       hasMoreWork = scheduledHostCallback(hasTimeRemaining, currentTime);
     } finally {
       if (hasMoreWork) {
+        console.info('hasMoreWork==', hasMoreWork)
+        debugger
         // If there's more work, schedule the next message event at the end
         // of the preceding one.
         // 如果有任务，继续注册下次宏任务的调度
