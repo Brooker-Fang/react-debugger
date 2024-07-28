@@ -1287,7 +1287,6 @@ function updateHostComponent(
 
   let nextChildren = nextProps.children;
   const isDirectTextChild = shouldSetTextContent(type, nextProps);
-  debugger
   if (isDirectTextChild) {
     // We special case a direct text child of a host node. This is a common
     // case. We won't handle it as a reified child. We will instead handle
@@ -3198,7 +3197,6 @@ function bailoutOnAlreadyFinishedWork(
     // The children don't have any work either. We can skip them.
     // TODO: Once we add back resuming, we should check if the children are
     // a work-in-progress set. If so, we need to transfer their effects.
-
     if (enableLazyContextPropagation && current !== null) {
       // Before bailing out, check if there are any context changes in
       // the children.
@@ -3308,7 +3306,6 @@ function beginWork(
     mount 阶段，第一个执行beginWork的fiber是rootFiber，也只有rootFiber的currentFiber不是null
   */
   if (current !== null) {
-    debugger
     // current !== null 说明是更新 update
     // TODO: The factoring of this block is weird.
     if (

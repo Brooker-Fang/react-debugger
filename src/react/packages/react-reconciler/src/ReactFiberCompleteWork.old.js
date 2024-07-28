@@ -896,7 +896,7 @@ function completeWork(
           markRef(workInProgress);
         }
       } else {
-        console.info('completeWork==', workInProgress)
+        // console.info('completeWork==', workInProgress)
         // 初始化时
         if (!newProps) {
           invariant(

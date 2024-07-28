@@ -1,5 +1,6 @@
 import { useEffect, useLayoutEffect } from 'react'
 import { React, Component, useState } from './CONST'
+import LaneExample from './Lane'
 const testhook = () => {
   // eslint-disable-next-line react-hooks/rules-of-hooks
   const [state, set] = useState()
@@ -74,4 +75,4 @@ const App = () => {
 }
 
 console.log('react 版本===', React.version)
-export default App
+export default LaneExample

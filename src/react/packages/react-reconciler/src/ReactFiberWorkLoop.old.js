@@ -760,7 +760,7 @@ export function isInterleavedUpdate(fiber: Fiber, lane: Lane) {
 */
 function ensureRootIsScheduled(root: FiberRoot, currentTime: number) {
   // 前半部分: 判断是否需要注册新的调度
-  // 当前 render 阶段正在进行的任务
+  // root.callbackNode上存在的任务
   const existingCallbackNode = root.callbackNode;
 
   // Check if any lanes are being starved by other work. If so, mark them as
@@ -844,10 +844,15 @@ function ensureRootIsScheduled(root: FiberRoot, currentTime: number) {
     const schedulerPriorityLevel = lanePriorityToSchedulerPriority(
       newCallbackPriority,
     );
+    // 如果 scheduleCallback 返回的不是 null，说明还有任务未执行（可能是被中断的任务），会保存到root.callbackNode
+    console.red('scheduleCallback')
     newCallbackNode = scheduleCallback(
       schedulerPriorityLevel,
       performConcurrentWorkOnRoot.bind(null, root),
     );
+    if (newCallbackNode) {
+      
+    }
   }
   // 更新root上的任务优先级和任务，以便下次发起调度时候可以获取到
   root.callbackPriority = newCallbackPriority;
@@ -875,15 +880,16 @@ function performConcurrentWorkOnRoot(root, didTimeout) {
   // Flush any pending passive effects before deciding which lanes to work on,
   // in case they schedule additional work.
   /* 
-    刷新pending状态的effects, 有可能某些effect会取消本次任务
     检查是否处于render过程中，是否需要恢复上一次渲染
     如果之前Update的优先级有改变(之前的渲染任务改变了),则直接放弃上一次的渲染结果.
   */
   const originalCallbackNode = root.callbackNode;
   const didFlushPassiveEffects = flushPassiveEffects();
   if (didFlushPassiveEffects) {
+    // 刷新pending状态的effects, 有可能某些effect会取消本次任务
     // Something in the passive effect phase may have canceled the current task.
     // Check if the task node for this root was changed.
+    // callbackNode 发生了变化，说明任务中断了，任务已经被取消
     if (root.callbackNode !== originalCallbackNode) {
       // The current task was canceled. Exit. We don't need to call
       // `ensureRootIsScheduled` because the check above implies either that
@@ -909,6 +915,7 @@ function performConcurrentWorkOnRoot(root, didTimeout) {
   // bug we're still investigating. Once the bug in Scheduler is fixed,
   // we can remove this, since we track expiration ourselves.
   if (!disableSchedulerTimeoutInWorkLoop && didTimeout) {
+    // 有过期任务，同步执行直到没有过期任务
     // Something expired. Flush synchronously until there's no expired
     // work left.
     markRootExpired(root, lanes);
@@ -2322,6 +2329,7 @@ function commitRootImpl(root, renderPriorityLevel) {
 
   // Always call this before exiting `commitRoot`, to ensure that any
   // additional work on this root is scheduled.
+  // 在退出 commit 阶段之前，重新发起一次调度，以确保还有未执行的任务继续执行 
   ensureRootIsScheduled(root, now());
 
   if (hasUncaughtError) {
